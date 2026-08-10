@@ -1,0 +1,51 @@
+namespace Cantace;
+
+public abstract class Player
+{
+    protected List<Card> Cards;
+    private int Score;
+
+    public Card? CurrentCard { get; set; }
+    public bool SetTwenty { get; set; }
+    public bool SetForty { get; set; }
+
+    protected Player()
+    {
+        Cards = new List<Card>();
+    }
+
+    public void SetCard(Card card)
+    {
+        Cards.Add(card);
+    }
+
+    public void ClearCards()
+    {
+        Cards.Clear();
+    }
+
+    public void RemoveCard(Card card)
+    {
+        Cards.Remove(card);
+    }
+
+    public List<Card> GetCards()
+    {
+        return new List<Card>(Cards);
+    }
+
+    public void IncrementScore(int value)
+    {
+        Score += value;
+    }
+
+    public int GetScore()
+    {
+        return Score;
+    }
+
+    public void ResetScore()
+    {
+        Score = 0;
+    }
+}
