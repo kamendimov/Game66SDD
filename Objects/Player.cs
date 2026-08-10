@@ -1,5 +1,9 @@
 namespace Cantace;
 
+/// <summary>
+/// Abstract base class for a player in the 66 game.
+/// Manages the player's hand of cards, score, current card, and set flags (SetTwenty, SetForty).
+/// </summary>
 public abstract class Player
 {
     protected List<Card> Cards;

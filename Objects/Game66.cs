@@ -1,5 +1,9 @@
 namespace Cantace;
 
+/// <summary>
+/// Core game engine for the 66 card game.
+/// Manages the 24-card deck, shuffling, distribution, card replacement, play logic, scoring, and trump changes.
+/// </summary>
 public class Game66
 {
     private const int PLAYER_CARDS = 3;

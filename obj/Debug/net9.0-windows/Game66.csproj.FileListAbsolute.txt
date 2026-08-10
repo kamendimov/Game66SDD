@@ -36,3 +36,4 @@ G:\PROJECTS\Game66\obj\Debug\net9.0-windows\refint\Game66.dll
 G:\PROJECTS\Game66\obj\Debug\net9.0-windows\Game66.pdb
 G:\PROJECTS\Game66\obj\Debug\net9.0-windows\Game66.genruntimeconfig.cache
 G:\PROJECTS\Game66\obj\Debug\net9.0-windows\ref\Game66.dll
+G:\PROJECTS\Game66\obj\Debug\net9.0-windows\Game66.sourcelink.json

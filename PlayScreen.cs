@@ -4,6 +4,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 
+/// <summary>
+/// Main form for the 66 card game.
+/// Handles painting, mouse clicks, button events, score rendering, and card display.
+/// </summary>
 public partial class PlayScreen : Form
 {
     private Game66 game66;

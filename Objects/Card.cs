@@ -2,6 +2,10 @@ namespace Cantace;
 
 using System.Drawing;
 
+/// <summary>
+/// Data model for a card in the 66 deck.
+/// Represents an individual playing card with name, value, index, and image path.
+/// </summary>
 public class Card
 {
     public string CardName { get; set; } = string.Empty;
