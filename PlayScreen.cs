@@ -43,10 +43,22 @@ public partial class PlayScreen : Form
 
     private void SetTwentyButton_Click(object sender, EventArgs e)
     {
+        game66.GetUserPlayer().PlayTwenty();
+        if (game66.GetUserPlayerScore() >= Game66.WIN_SCORE)
+        {
+            MessageBox.Show("User Player won!");
+        }
+        Invalidate();
     }
 
     private void SetFourtyButton_Click(object sender, EventArgs e)
     {
+        game66.GetUserPlayer().PlayForty();
+        if (game66.GetUserPlayerScore() >= Game66.WIN_SCORE)
+        {
+            MessageBox.Show("User Player won!");
+        }
+        Invalidate();
     }
 
     private void CloseGameButton_Click(object sender, EventArgs e)
@@ -77,11 +89,11 @@ public partial class PlayScreen : Form
 
                 if (game66.GetComputerPlayerScore() >= Game66.WIN_SCORE)
                 {
-                    MessageBox.Show("Computer Player wins");
+                    MessageBox.Show("Computer Player won!");
                 }
                 else if (game66.GetUserPlayerScore() >= Game66.WIN_SCORE)
                 {
-                    MessageBox.Show("User player wins");
+                    MessageBox.Show("User player won!");
                 }
 
                 break;

@@ -2,7 +2,7 @@ namespace Cantace;
 
 /// <summary>
 /// Abstract base class for a player in the 66 game.
-/// Manages the player's hand of cards, score, current card, and set flags (SetTwenty, SetForty).
+/// Manages the player's hand of cards, score, and current card.
 /// </summary>
 public abstract class Player
 {
@@ -10,8 +10,6 @@ public abstract class Player
     private int Score;
 
     public Card? CurrentCard { get; set; }
-    public bool SetTwenty { get; set; }
-    public bool SetForty { get; set; }
 
     protected Player()
     {
@@ -51,5 +49,14 @@ public abstract class Player
     public void ResetScore()
     {
         Score = 0;
+    }
+
+    public static string GetCardSymbol(string cardName)
+    {
+        if (cardName.EndsWith("Spatia")) return "Spatia";
+        if (cardName.EndsWith("Pika")) return "Pika";
+        if (cardName.EndsWith("Kupa")) return "Kupa";
+        if (cardName.EndsWith("Kare")) return "Kare";
+        return string.Empty;
     }
 }
