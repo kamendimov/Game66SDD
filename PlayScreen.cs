@@ -49,6 +49,12 @@ public partial class PlayScreen : Form
     {
     }
 
+    private void CloseGameButton_Click(object sender, EventArgs e)
+    {
+        game66.CloseTheGame();
+        Invalidate();
+    }
+
     private void PlayScreen_MouseClick(object sender, MouseEventArgs e)
     {
         int cardWidth = 100;
@@ -68,6 +74,16 @@ public partial class PlayScreen : Form
                 
                 selectedCardIndex = i;
                 Invalidate();
+
+                if (game66.GetComputerPlayerScore() >= Game66.WIN_SCORE)
+                {
+                    MessageBox.Show("Computer Player wins");
+                }
+                else if (game66.GetUserPlayerScore() >= Game66.WIN_SCORE)
+                {
+                    MessageBox.Show("User player wins");
+                }
+
                 break;
             }
         }

@@ -39,6 +39,7 @@ Build a two-player card game (human vs. computer) where a human player competes 
 - **REQ-BTN-03:** `ChangeTrumpCardButton` — allows trump change when conditions are met.
 - **REQ-BTN-04:** `SetTwentyButton` — marks or claims a 20-set.
 - **REQ-BTN-05:** `SetFortyButton` — marks or claims a 40-set.
+- **REQ-BTN-06:** `CloseGameButton` — calls `CloseTheGame()` to stop card dealing and clear hands.
 
 ### 4.3 Card Management
 - **REQ-CARD-01:** The game uses a 24-card deck with indices 1–24.
@@ -60,12 +61,20 @@ Build a two-player card game (human vs. computer) where a human player competes 
   1. Matching suit with highest value if it can beat the user.
   2. Otherwise, matching suit with minimal greater value (if any).
   3. Otherwise, the smallest card in hand.
+- **REQ-PLAY-04:** When a player reaches score >= `Game66.WIN_SCORE` after playing a card, a message box shows the winner:
+  - If `ComputerPlayer.Score >= Game66.WIN_SCORE` → `"Computer Player wins"`
+  - Else if `UserPlayer.Score >= Game66.WIN_SCORE` → `"User player wins"`
 
 ### 4.6 Scoring & Sets
 - **REQ-SCORE-01:** Total scores are tracked for both players.
 - **REQ-SCORE-02:** `SetTwenty` boolean property exists on `Player`.
 - **REQ-SCORE-03:** `SetForty` boolean property exists on `Player`.
 - **REQ-SCORE-04:** `SetTwentyButton` and `SetFortyButton` allow claiming sets.
+
+### 4.7 Game End
+- **REQ-GAME-01:** `CloseTheGame()` sets `gameClosed = true` when `UserPlayer.Score >= 1`.
+- **REQ-GAME-02:** When `gameClosed` is `true`, neither player receives new cards after playing.
+- **REQ-GAME-03:** In `PlaySelectedCard`, if `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`, both players' cards are cleared.
 
 ---
 
@@ -83,6 +92,9 @@ Build a two-player card game (human vs. computer) where a human player competes 
 | AC-08 | `SetTwenty` and `SetForty` properties exist on `Player` and are exposed via buttons. | ✅ Met |
 | AC-09 | 24 PNG card images are present and rendered via custom painting. | ✅ Met |
 | AC-10 | Selected card is highlighted with a yellow border. | ✅ Met |
+| AC-11 | `CloseTheGame()` sets `gameClosed = true` when `UserPlayer.Score >= 1`; no new cards are dealt after that. | ✅ Met |
+| AC-12 | In `PlaySelectedCard`, when `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`, both players' cards are cleared. | ✅ Met |
+| AC-13 | When a player reaches score >= `Game66.WIN_SCORE` after playing a card, a message box shows the winner. | ✅ Met |
 
 ---
 
@@ -121,13 +133,22 @@ Cantace/
 - `PlayCardCount` tracks played cards to calculate the next undealt index as `13 + PlayCardCount`.
 - `CurrentCard` tracks the card played in the current round for both players.
 - `ResetGame()` clears hands, scores, `CurrentCard`, and `TrumpCard`.
+- `WIN_SCORE` is a public constant in `Game66` set to `66`, replacing the magic number in score comparisons.
 - `ChangeTrumpCard()` enforces the winning + zero-value trump card condition.
+- `CloseTheGame()` sets `gameClosed = true` when `UserPlayer.Score >= 1`. When `gameClosed` is true, no new cards are dealt after playing.
+- In `PlaySelectedCard`, after scoring, if `gameClosed` is `true` and `UserPlayer.GetScore() >= Game66.WIN_SCORE`, both players' cards are cleared.
+- `PlayScreen_MouseClick` shows a winner message box when either player reaches score >= `Game66.WIN_SCORE` after playing a card.
 - Computer response logic is split into helpers: `GetComputerPlayerCardToPlay`, `GetComputerPlayerCardToPlayByTrumpCard`, `GetComputerPlayerSmallestCard`.
 
 ---
 
 ## 8. Current Status
 All features requested through the `SetTwenty` / `SetForty` button command are implemented and the project builds successfully with `dotnet build`. Button click handlers for `SetTwenty` and `SetForty` are present as empty stubs.
+- Card images in `G:\PROJECTS\Game66\Images` have been replaced with the images from `G:\PROJECTS\CSoft\Cantace\Images`.
+- `CloseTheGame()` method added to `Game66` to set `gameClosed = true` when `UserPlayer.Score >= 1`. When `gameClosed` is true, no new cards are dealt after playing.
+- `PlaySelectedCard` updated to clear both players' cards when `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`.
+- `CloseGameButton` added to `PlayScreen` to trigger `CloseTheGame()`.
+- `PlayScreen_MouseClick` shows a winner message box when either player reaches score >= `Game66.WIN_SCORE` after playing a card.
 
 ---
 

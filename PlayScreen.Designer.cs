@@ -33,6 +33,7 @@ partial class PlayScreen
         ChangeTrumpCardButton = new Button();
         SetTwentyButton = new Button();
         SetFortyButton = new Button();
+        CloseGameButton = new Button();
         SuspendLayout();
         // 
         // ResetGameButton
@@ -84,6 +85,16 @@ partial class PlayScreen
         SetFortyButton.Text = "Set\r\nForty";
         SetFortyButton.UseVisualStyleBackColor = true;
         SetFortyButton.Click += SetFourtyButton_Click;
+        // 
+        // CloseGameButton
+        // 
+        CloseGameButton.Location = new Point(10, 310);
+        CloseGameButton.Name = "CloseGameButton";
+        CloseGameButton.Size = new Size(120, 60);
+        CloseGameButton.TabIndex = 5;
+        CloseGameButton.Text = "Close\r\nGame";
+        CloseGameButton.UseVisualStyleBackColor = true;
+        CloseGameButton.Click += CloseGameButton_Click;
         this.Paint += PlayScreen_Paint;
         this.MouseClick += PlayScreen_MouseClick;
         // 
@@ -96,6 +107,7 @@ partial class PlayScreen
         Controls.Add(ChangeTrumpCardButton);
         Controls.Add(SetTwentyButton);
         Controls.Add(SetFortyButton);
+        Controls.Add(CloseGameButton);
         DoubleBuffered = true;
         Font = new Font("Arial", 11F, FontStyle.Regular, GraphicsUnit.Point, 0);
         FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -113,4 +125,5 @@ partial class PlayScreen
     private System.Windows.Forms.Button ChangeTrumpCardButton;
     private System.Windows.Forms.Button SetTwentyButton;
     private System.Windows.Forms.Button SetFortyButton;
+    private System.Windows.Forms.Button CloseGameButton;
 }
