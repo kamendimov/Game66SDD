@@ -36,7 +36,7 @@ Build a two-player card game (human vs. computer) where a human player competes 
 ### 4.2 Buttons & Controls
 - **REQ-BTN-01:** `ResetGameButton` — resets the entire game state.
 - **REQ-BTN-02:** `SetCardsButton` — shuffles the deck and distributes cards.
-- **REQ-BTN-03:** `ChangeTrumpCardButton` — allows trump change when conditions are met.
+- **REQ-BTN-03:** `ChangeTrumpCardButton` — calls `UserPlayer.ChangeTrumpCard(ComputerPlayer.GetScore())` via `Game66.ChangeTrumpCard()` to perform trump change when conditions are met.
 - **REQ-BTN-04:** `SetTwentyButton` — calls `PlayTwenty()` and, if `UserPlayer.Score >= Game66.WIN_SCORE`, shows `"User Player won!"`.
 - **REQ-BTN-05:** `SetFortyButton` — calls `PlayForty()` and, if `UserPlayer.Score >= Game66.WIN_SCORE`, shows `"User Player won!"`.
 - **REQ-BTN-06:** `CloseGameButton` — calls `CloseTheGame()` to stop card dealing and clear hands.
@@ -53,6 +53,7 @@ Build a two-player card game (human vs. computer) where a human player competes 
 - **REQ-TRUMP-02:** Trump can be changed only when:
   1. The user is currently winning, AND
   2. The user holds a zero-value card of the current trump type.
+- `Player.ChangeTrumpCard(int)` is abstract; `UserPlayer` implements the trump swap and returns the new trump card, while `ComputerPlayer` returns `null`.
 
 ### 4.5 Playing & Computer Logic
 - **REQ-PLAY-01:** User clicks a card to play it.
@@ -67,15 +68,17 @@ Build a two-player card game (human vs. computer) where a human player competes 
 
 ### 4.6 Scoring & Sets
 - **REQ-SCORE-01:** Total scores are tracked for both players.
-- **REQ-SCORE-02:** `PlayTwenty()` on `UserPlayer` awards 20 points for a non-trump 4-3 combination.
-- **REQ-SCORE-03:** `PlayForty()` on `UserPlayer` awards 40 points for a trump 4-3 combination.
-- **REQ-SCORE-04:** `SetTwentyButton` and `SetFortyButton` trigger `PlayTwenty()` and `PlayForty()` on `UserPlayer`.
-- **REQ-SCORE-05:** `PlayTwenty()` on `UserPlayer` adds 20 points when:
+- **REQ-SCORE-02:** If `selectedCard` is of the trump suit and `computerCard` is not of the trump suit, `UserPlayer` receives the full round score (`selectedCard.CardValue + computerCard.CardValue`) without value comparison.
+- **REQ-SCORE-03:** If `computerCard` is of the trump suit and `selectedCard` is not of the trump suit, `ComputerPlayer` receives the full round score (`selectedCard.CardValue + computerCard.CardValue`) without value comparison.
+- **REQ-SCORE-04:** `PlayTwenty()` on `UserPlayer` awards 20 points for a non-trump 4-3 combination.
+- **REQ-SCORE-05:** `PlayForty()` on `UserPlayer` awards 40 points for a trump 4-3 combination.
+- **REQ-SCORE-06:** `SetTwentyButton` and `SetFortyButton` trigger `PlayTwenty()` and `PlayForty()` on `UserPlayer`.
+- **REQ-SCORE-07:** `PlayTwenty()` on `UserPlayer` adds 20 points when:
   1. The user won the last round (`UserPlayer.LastRoundUserWon == true`)
   2. `UserPlayer` has a card with value 4 and a card with value 3
   3. Both cards are of the same suit
   4. Neither card is of the trump suit
-- **REQ-SCORE-06:** `PlayForty()` on `UserPlayer` adds 40 points when:
+- **REQ-SCORE-08:** `PlayForty()` on `UserPlayer` adds 40 points when:
   1. The user won the last round (`UserPlayer.LastRoundUserWon == true`)
   2. `UserPlayer` has a card with value 4 and a card with value 3
   3. Both cards are of the same suit
@@ -105,9 +108,10 @@ Build a two-player card game (human vs. computer) where a human player competes 
 | AC-11 | `CloseTheGame()` sets `gameClosed = true` when `UserPlayer.Score >= 1`; no new cards are dealt after that. | ✅ Met |
 | AC-12 | In `PlaySelectedCard`, when `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`, both players' cards are cleared. | ✅ Met |
 | AC-13 | When a player reaches score >= `Game66.WIN_SCORE` after playing a card, a message box shows the winner. | ✅ Met |
-| AC-14 | `UserPlayer.PlayTwenty()` adds 20 points when the user won the last round and holds a non-trump value-4 and value-3 card of the same suit. | ✅ Met |
-| AC-15 | `UserPlayer.PlayForty()` adds 40 points when the user won the last round and holds a trump value-4 and value-3 card of the same suit. | ✅ Met |
-| AC-16 | `SetFortyButton` calls `PlayForty()` and shows `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`. | ✅ Met |
+| AC-14 | In `PlaySelectedCard`, if `computerCard` is of the trump suit and `selectedCard` is not, `ComputerPlayer` receives the full round score without value comparison. | ✅ Met |
+| AC-15 | `UserPlayer.PlayTwenty()` adds 20 points when the user won the last round and holds a non-trump value-4 and value-3 card of the same suit. | ✅ Met |
+| AC-16 | `UserPlayer.PlayForty()` adds 40 points when the user won the last round and holds a trump value-4 and value-3 card of the same suit. | ✅ Met |
+| AC-17 | `SetFortyButton` calls `PlayForty()` and shows `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`. | ✅ Met |
 
 ---
 
@@ -133,9 +137,9 @@ Cantace/
 ### 6.2 Component Responsibilities
 - **PlayScreen** — Main form; handles painting, mouse clicks, button events, score rendering, and card display.
 - **Game66** — Core game engine; deck management, distribution, replacement, play logic, scoring, trump changes, and state synchronization to `UserPlayer` (`LastRoundUserWon`, `TrumpCard`).
-- **Player (abstract)** — Base class with `Cards`, `CurrentCard`, `IncrementScore`, `ResetScore`, and `public static GetCardSymbol(string)`.
-- **ComputerPlayer** — AI strategy implementation.
-- **UserPlayer** — Human player logic; holds `LastRoundUserWon`, `TrumpCard`, and implements `PlayTwenty()` and `PlayForty()` for set evaluation.
+- **Player (abstract)** — Base class with `Cards`, `CurrentCard`, `IncrementScore`, `ResetScore`, abstract methods `CloseTheGame()`, `ChangeTrumpCard(int)`, `PlayTwenty()`, `PlayForty()`, and `public static GetCardSymbol(string)`.
+- **ComputerPlayer** — AI strategy implementation; overrides `CloseTheGame()`, `ChangeTrumpCard(int)`, `PlayTwenty()`, and `PlayForty()` with empty/no-op bodies.
+- **UserPlayer** — Human player logic; holds `LastRoundUserWon`, `TrumpCard`, `GameClosed`, and overrides `CloseTheGame()`, `ChangeTrumpCard(int)`, `PlayTwenty()`, and `PlayForty()` with concrete implementations.
 - **Card** — Data model (`CardName`, `CardValue`, `Index`, `ImagePath`).
 
 ---
@@ -149,7 +153,11 @@ Cantace/
 - `WIN_SCORE` is a public constant in `Game66` set to `66`, replacing the magic number in score comparisons.
 - `UserPlayer.LastRoundUserWon` tracks whether the user won the most recent round; it is synchronized from `Game66` and reset in `ResetGame()` and `DistributeCards()`.
 - `UserPlayer.TrumpCard` mirrors the current trump card; it is synchronized from `Game66` after distribution and trump changes.
+- `UserPlayer.ChangeTrumpCard(int computerPlayerScore)` performs the trump swap logic and returns the new trump card; `Game66.ChangeTrumpCard()` delegates to it and updates `Game66.TrumpCard`.
 - `PlayTwenty()` and `PlayForty()` are implemented on `UserPlayer`; they award 20 and 40 points respectively when `LastRoundUserWon` is true and the user holds the required card combination.
+- `Player` declares `CloseTheGame()`, `ChangeTrumpCard(int)`, `PlayTwenty()`, and `PlayForty()` as abstract methods; `UserPlayer` provides concrete implementations, while `ComputerPlayer` provides empty/no-op overrides.
+- In `PlaySelectedCard`, if the user's selected card is of the trump suit and the computer's card is not, the full round score is awarded to `UserPlayer` without comparing card values.
+- In `PlaySelectedCard`, if the computer's card is of the trump suit and the user's selected card is not, the full round score is awarded to `ComputerPlayer` without comparing card values.
 - `Game66.GetUserPlayer()` exposes the `UserPlayer` instance so the UI can call `PlayTwenty()` and `PlayForty()`.
 - `Player.GetCardSymbol(string)` is a public static helper used by `UserPlayer.PlayTwenty()`, `UserPlayer.PlayForty()`, and `Game66` suit-matching logic.
 - `ChangeTrumpCard()` enforces the winning + zero-value trump card condition.
@@ -170,11 +178,15 @@ All features requested through the `SetTwenty` / `SetForty` button command are i
 - `PlaySelectedCard` updated to clear both players' cards when `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`.
 - `CloseGameButton` added to `PlayScreen` to trigger `CloseTheGame()`.
 - `PlayScreen_MouseClick` shows a winner message box when either player reaches score >= `Game66.WIN_SCORE` after playing a card.
+- `PlaySelectedCard` updated so that if the user's selected card is of the trump suit and the computer's card is not, the full round score is awarded to `UserPlayer` without comparing card values.
+- `PlaySelectedCard` updated so that if the computer's card is of the trump suit and the user's selected card is not, the full round score is awarded to `ComputerPlayer` without comparing card values.
 - `PlayTwenty()` method moved to `UserPlayer` to award 20 points when the user won the last round and holds a non-trump value-4 and value-3 card of the same suit.
 - `SetTwentyButton_Click` implemented to call `game66.GetUserPlayer().PlayTwenty()`, show `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`, and refresh the UI.
 - `PlayForty()` method moved to `UserPlayer` to award 40 points when the user won the last round and holds a trump value-4 and value-3 card of the same suit.
 - `SetFourtyButton_Click` implemented to call `game66.GetUserPlayer().PlayForty()`, show `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`, and refresh the UI.
+- `ChangeTrumpCard()` moved from `Game66` to `UserPlayer`; `UserPlayer.ChangeTrumpCard(int computerPlayerScore)` performs the swap and returns the new trump card, while `Game66.ChangeTrumpCard()` delegates to it and updates `Game66.TrumpCard`.
 - `GetCardSymbol()` moved from `UserPlayer` and `Game66` to `Player` as a `public static` method; all callers updated.
+- `CloseTheGame()`, `ChangeTrumpCard(int)`, `PlayTwenty()`, and `PlayForty()` declared as abstract methods in `Player`; `UserPlayer` overrides them with concrete logic, `ComputerPlayer` overrides them with empty/no-op bodies.
 
 ---
 

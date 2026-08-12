@@ -6,4 +6,20 @@ namespace Cantace;
 /// </summary>
 public class ComputerPlayer : Player
 {
+    public override void CloseTheGame()
+    {
+    }
+
+    public override Card? ChangeTrumpCard(int computerPlayerScore)
+    {
+        return null;
+    }
+
+    public override void PlayTwenty()
+    {
+    }
+
+    public override void PlayForty()
+    {
+    }
 }

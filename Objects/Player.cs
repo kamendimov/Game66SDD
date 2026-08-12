@@ -51,6 +51,11 @@ public abstract class Player
         Score = 0;
     }
 
+    public abstract void CloseTheGame();
+    public abstract Card? ChangeTrumpCard(int computerPlayerScore);
+    public abstract void PlayTwenty();
+    public abstract void PlayForty();
+
     public static string GetCardSymbol(string cardName)
     {
         if (cardName.EndsWith("Spatia")) return "Spatia";

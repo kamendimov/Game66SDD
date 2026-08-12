@@ -8,8 +8,45 @@ public class UserPlayer : Player
 {
     public bool LastRoundUserWon { get; set; }
     public Card? TrumpCard { get; set; }
+    public bool GameClosed { get; set; }
 
-    public void PlayTwenty()
+    public override void CloseTheGame()
+    {
+        if (GetScore() >= 1)
+        {
+            GameClosed = true;
+        }
+    }
+
+    public override Card? ChangeTrumpCard(int computerPlayerScore)
+    {
+        if (TrumpCard == null) return null;
+        if (GetScore() <= computerPlayerScore) return null;
+        
+        string trumpSymbol = Player.GetCardSymbol(TrumpCard.CardName);
+        
+        Card? zeroValueMatch = null;
+        foreach (Card userCard in GetCards())
+        {
+            if (userCard.CardValue == 0 && userCard.CardName.EndsWith(trumpSymbol))
+            {
+                zeroValueMatch = userCard;
+                break;
+            }
+        }
+        
+        if (zeroValueMatch != null)
+        {
+            Card oldTrumpCard = TrumpCard;
+            RemoveCard(zeroValueMatch);
+            SetCard(oldTrumpCard);
+            TrumpCard = zeroValueMatch;
+        }
+        
+        return TrumpCard;
+    }
+
+    public override void PlayTwenty()
     {
         if (!LastRoundUserWon) return;
         
@@ -39,7 +76,7 @@ public class UserPlayer : Player
         }
     }
 
-    public void PlayForty()
+    public override void PlayForty()
     {
         if (!LastRoundUserWon) return;
         

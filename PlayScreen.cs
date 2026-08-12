@@ -63,7 +63,7 @@ public partial class PlayScreen : Form
 
     private void CloseGameButton_Click(object sender, EventArgs e)
     {
-        game66.CloseTheGame();
+        game66.GetUserPlayer().CloseTheGame();
         Invalidate();
     }
 
@@ -126,9 +126,10 @@ public partial class PlayScreen : Form
             x += 105;
         }
 
-        if (game66.TrumpCard != null)
+        Card? trumpCard = game66.GetUserPlayer().TrumpCard;
+        if (trumpCard != null)
         {
-            string trumpImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, game66.TrumpCard.ImagePath);
+            string trumpImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, trumpCard.ImagePath);
             if (File.Exists(trumpImagePath))
             {
                 Image trumpImage = Image.FromFile(trumpImagePath);

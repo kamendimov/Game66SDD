@@ -10,12 +10,10 @@ public class Game66
     private const int TRUMP_CARD_INDEX = 12;
     public const int WIN_SCORE = 66;
 
-    public Card? TrumpCard = null;
     private int PlayCardCount { get; set; } = 0;
     private List<Card> Cards;
     private UserPlayer UserPlayer;
     private ComputerPlayer ComputerPlayer;
-    private bool gameClosed = false;
 
     public Game66()
     {
@@ -86,12 +84,11 @@ public class Game66
         ComputerPlayer.ClearCards();
         UserPlayer.CurrentCard = null;
         ComputerPlayer.CurrentCard = null;
-        TrumpCard = null;
         UserPlayer.TrumpCard = null;
         UserPlayer.ResetScore();
         ComputerPlayer.ResetScore();
-        gameClosed = false;
         UserPlayer.LastRoundUserWon = false;
+        UserPlayer.GameClosed = false;
     }
 
     public void DistributeCards()
@@ -100,6 +97,7 @@ public class Game66
         ComputerPlayer.ClearCards();
         PlayCardCount = 0;
         UserPlayer.LastRoundUserWon = false;
+        UserPlayer.GameClosed = false;
         for (int i = 0; i < PLAYER_CARDS; i++)
         {
             UserPlayer.SetCard(Cards[i]);
@@ -116,8 +114,7 @@ public class Game66
         {
             ComputerPlayer.SetCard(Cards[i]);
         }
-        TrumpCard = Cards[TRUMP_CARD_INDEX];
-        UserPlayer.TrumpCard = TrumpCard;
+        UserPlayer.TrumpCard = Cards[TRUMP_CARD_INDEX];
     }
 
     public UserPlayer GetUserPlayer()
@@ -142,7 +139,7 @@ public class Game66
         }
         else
         {
-            computerCard = GetComputerPlayerCardToPlayByTrumpCard(TrumpCard);
+            computerCard = GetComputerPlayerCardToPlayByTrumpCard(UserPlayer.TrumpCard);
         }
         if (computerCard != null)
         {
@@ -157,27 +154,43 @@ public class Game66
             ComputerPlayer.RemoveCard(computerCard);
             ComputerPlayer.CurrentCard = computerCard;
 
-            int roundScore = selectedCard.CardValue + computerCard.CardValue;
-            if (selectedCard.CardValue > computerCard.CardValue)
+            bool userCardIsTrump = UserPlayer.TrumpCard != null &&
+                Player.GetCardSymbol(selectedCard.CardName) == Player.GetCardSymbol(UserPlayer.TrumpCard.CardName);
+            bool computerCardIsTrump = UserPlayer.TrumpCard != null &&
+                Player.GetCardSymbol(computerCard.CardName) == Player.GetCardSymbol(UserPlayer.TrumpCard.CardName);
+
+            if (userCardIsTrump && !computerCardIsTrump)
             {
-                UserPlayer.IncrementScore(roundScore);
+                UserPlayer.IncrementScore(selectedCard.CardValue + computerCard.CardValue);
                 UserPlayer.LastRoundUserWon = true;
             }
-            else if (computerCard.CardValue > selectedCard.CardValue)
+            else if (computerCardIsTrump && !userCardIsTrump)
             {
-                ComputerPlayer.IncrementScore(roundScore);
+                ComputerPlayer.IncrementScore(selectedCard.CardValue + computerCard.CardValue);
                 UserPlayer.LastRoundUserWon = false;
             }
+            else
+            {
+                int roundScore = selectedCard.CardValue + computerCard.CardValue;
+                if (selectedCard.CardValue > computerCard.CardValue)
+                {
+                    UserPlayer.IncrementScore(roundScore);
+                    UserPlayer.LastRoundUserWon = true;
+                }
+                else if (computerCard.CardValue > selectedCard.CardValue)
+                {
+                    ComputerPlayer.IncrementScore(roundScore);
+                    UserPlayer.LastRoundUserWon = false;
+                }
+            }
 
-            UserPlayer.TrumpCard = TrumpCard;
-
-            if (gameClosed && UserPlayer.GetScore() >= Game66.WIN_SCORE)
+            if (UserPlayer.GameClosed && UserPlayer.GetScore() >= Game66.WIN_SCORE)
             {
                 UserPlayer.ClearCards();
                 ComputerPlayer.ClearCards();
             }
 
-            if (!gameClosed)
+            if (!UserPlayer.GameClosed)
             {
                 PlayCardCount++;
                 for (int i = TRUMP_CARD_INDEX + PlayCardCount; i < Cards.Count; i++)
@@ -281,37 +294,6 @@ public class Game66
 
     public void ChangeTrumpCard()
     {
-        if (TrumpCard == null) return;
-        
-        if (UserPlayer.GetScore() <= ComputerPlayer.GetScore()) return;
-        
-        string trumpSymbol = Player.GetCardSymbol(TrumpCard.CardName);
-        
-        Card? zeroValueMatch = null;
-        foreach (Card userCard in UserPlayer.GetCards())
-        {
-            if (userCard.CardValue == 0 && userCard.CardName.EndsWith(trumpSymbol))
-            {
-                zeroValueMatch = userCard;
-                break;
-            }
-        }
-        
-        if (zeroValueMatch != null)
-        {
-            Card oldTrumpCard = TrumpCard;
-            UserPlayer.RemoveCard(zeroValueMatch);
-            UserPlayer.SetCard(oldTrumpCard);
-            TrumpCard = zeroValueMatch;
-            UserPlayer.TrumpCard = TrumpCard;
-        }
-    }
-
-    public void CloseTheGame()
-    {
-        if (UserPlayer.GetScore() >= 1)
-        {
-            gameClosed = true;
-        }
+        UserPlayer.ChangeTrumpCard(ComputerPlayer.GetScore());
     }
 }
