@@ -87,7 +87,7 @@ Build a two-player card game (human vs. computer) where a human player competes 
 ### 4.7 Game End
 - **REQ-GAME-01:** `CloseTheGame()` sets `gameClosed = true` when `UserPlayer.Score >= 1`.
 - **REQ-GAME-02:** When `gameClosed` is `true`, neither player receives new cards after playing.
-- **REQ-GAME-03:** In `PlaySelectedCard`, if `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`, both players' cards are cleared.
+- **REQ-GAME-03:** In `SetUserPlayerSelectedCard`, if `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`, both players' cards are cleared.
 
 ---
 
@@ -106,9 +106,9 @@ Build a two-player card game (human vs. computer) where a human player competes 
 | AC-09 | 24 PNG card images are present and rendered via custom painting. | ✅ Met |
 | AC-10 | Selected card is highlighted with a yellow border. | ✅ Met |
 | AC-11 | `CloseTheGame()` sets `gameClosed = true` when `UserPlayer.Score >= 1`; no new cards are dealt after that. | ✅ Met |
-| AC-12 | In `PlaySelectedCard`, when `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`, both players' cards are cleared. | ✅ Met |
+| AC-12 | In `SetUserPlayerSelectedCard`, when `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`, both players' cards are cleared. | ✅ Met |
 | AC-13 | When a player reaches score >= `Game66.WIN_SCORE` after playing a card, a message box shows the winner. | ✅ Met |
-| AC-14 | In `PlaySelectedCard`, if `computerCard` is of the trump suit and `selectedCard` is not, `ComputerPlayer` receives the full round score without value comparison. | ✅ Met |
+| AC-14 | In `SetUserPlayerSelectedCard`, if `computerCard` is of the trump suit and `selectedCard` is not, `ComputerPlayer` receives the full round score without value comparison. | ✅ Met |
 | AC-15 | `UserPlayer.PlayTwenty()` adds 20 points when the user won the last round and holds a non-trump value-4 and value-3 card of the same suit. | ✅ Met |
 | AC-16 | `UserPlayer.PlayForty()` adds 40 points when the user won the last round and holds a trump value-4 and value-3 card of the same suit. | ✅ Met |
 | AC-17 | `SetFortyButton` calls `PlayForty()` and shows `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`. | ✅ Met |
@@ -156,13 +156,13 @@ Cantace/
 - `UserPlayer.ChangeTrumpCard(int computerPlayerScore)` performs the trump swap logic and returns the new trump card; `Game66.ChangeTrumpCard()` delegates to it and updates `Game66.TrumpCard`.
 - `PlayTwenty()` and `PlayForty()` are implemented on `UserPlayer`; they award 20 and 40 points respectively when `LastRoundUserWon` is true and the user holds the required card combination.
 - `Player` declares `CloseTheGame()`, `ChangeTrumpCard(int)`, `PlayTwenty()`, and `PlayForty()` as abstract methods; `UserPlayer` provides concrete implementations, while `ComputerPlayer` provides empty/no-op overrides.
-- In `PlaySelectedCard`, if the user's selected card is of the trump suit and the computer's card is not, the full round score is awarded to `UserPlayer` without comparing card values.
-- In `PlaySelectedCard`, if the computer's card is of the trump suit and the user's selected card is not, the full round score is awarded to `ComputerPlayer` without comparing card values.
+- In `SetUserPlayerSelectedCard`, if the user's selected card is of the trump suit and the computer's card is not, the full round score is awarded to `UserPlayer` without comparing card values.
+- In `SetUserPlayerSelectedCard`, if the computer's card is of the trump suit and the user's selected card is not, the full round score is awarded to `ComputerPlayer` without comparing card values.
 - `Game66.GetUserPlayer()` exposes the `UserPlayer` instance so the UI can call `PlayTwenty()` and `PlayForty()`.
 - `Player.GetCardSymbol(string)` is a public static helper used by `UserPlayer.PlayTwenty()`, `UserPlayer.PlayForty()`, and `Game66` suit-matching logic.
 - `ChangeTrumpCard()` enforces the winning + zero-value trump card condition.
 - `CloseTheGame()` sets `gameClosed = true` when `UserPlayer.Score >= 1`. When `gameClosed` is true, no new cards are dealt after playing.
-- In `PlaySelectedCard`, after scoring, if `gameClosed` is `true` and `UserPlayer.GetScore() >= Game66.WIN_SCORE`, both players' cards are cleared.
+- In `SetUserPlayerSelectedCard`, after scoring, if `gameClosed` is `true` and `UserPlayer.GetScore() >= Game66.WIN_SCORE`, both players' cards are cleared.
 - `PlayScreen_MouseClick` shows a winner message box when either player reaches score >= `Game66.WIN_SCORE` after playing a card.
 - `PlayTwenty()` and `PlayForty()` methods moved from `Game66` to `UserPlayer`; `Game66` synchronizes `LastRoundUserWon` and `TrumpCard` to `UserPlayer`.
 - `SetTwentyButton_Click` calls `game66.GetUserPlayer().PlayTwenty()`, shows `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`, then calls `Invalidate()`.
@@ -175,11 +175,11 @@ Cantace/
 All features requested through the `SetTwenty` / `SetForty` button command are implemented and the project builds successfully with `dotnet build`. Button click handlers for `SetTwenty` and `SetForty` are present as empty stubs.
 - Card images in `G:\PROJECTS\Game66\Images` have been replaced with the images from `G:\PROJECTS\CSoft\Cantace\Images`.
 - `CloseTheGame()` method added to `Game66` to set `gameClosed = true` when `UserPlayer.Score >= 1`. When `gameClosed` is true, no new cards are dealt after playing.
-- `PlaySelectedCard` updated to clear both players' cards when `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`.
+- `SetUserPlayerSelectedCard` updated to clear both players' cards when `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`.
 - `CloseGameButton` added to `PlayScreen` to trigger `CloseTheGame()`.
 - `PlayScreen_MouseClick` shows a winner message box when either player reaches score >= `Game66.WIN_SCORE` after playing a card.
-- `PlaySelectedCard` updated so that if the user's selected card is of the trump suit and the computer's card is not, the full round score is awarded to `UserPlayer` without comparing card values.
-- `PlaySelectedCard` updated so that if the computer's card is of the trump suit and the user's selected card is not, the full round score is awarded to `ComputerPlayer` without comparing card values.
+- `SetUserPlayerSelectedCard` updated so that if the user's selected card is of the trump suit and the computer's card is not, the full round score is awarded to `UserPlayer` without comparing card values.
+- `SetUserPlayerSelectedCard` updated so that if the computer's card is of the trump suit and the user's selected card is not, the full round score is awarded to `ComputerPlayer` without comparing card values.
 - `PlayTwenty()` method moved to `UserPlayer` to award 20 points when the user won the last round and holds a non-trump value-4 and value-3 card of the same suit.
 - `SetTwentyButton_Click` implemented to call `game66.GetUserPlayer().PlayTwenty()`, show `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`, and refresh the UI.
 - `PlayForty()` method moved to `UserPlayer` to award 40 points when the user won the last round and holds a trump value-4 and value-3 card of the same suit.
@@ -187,6 +187,11 @@ All features requested through the `SetTwenty` / `SetForty` button command are i
 - `ChangeTrumpCard()` moved from `Game66` to `UserPlayer`; `UserPlayer.ChangeTrumpCard(int computerPlayerScore)` performs the swap and returns the new trump card, while `Game66.ChangeTrumpCard()` delegates to it and updates `Game66.TrumpCard`.
 - `GetCardSymbol()` moved from `UserPlayer` and `Game66` to `Player` as a `public static` method; all callers updated.
 - `CloseTheGame()`, `ChangeTrumpCard(int)`, `PlayTwenty()`, and `PlayForty()` declared as abstract methods in `Player`; `UserPlayer` overrides them with concrete logic, `ComputerPlayer` overrides them with empty/no-op bodies.
+- `PlaySelectedCard` renamed to `SetUserPlayerSelectedCard` in `Objects\Game66.cs` and `PlayScreen.cs` for clarity.
+- `SetComputerPlayerSelectedCard` added to `Game66` to select the computer's card: prefers a trump-suit card with value 11, otherwise selects the smallest-value card, and clears `UserPlayer.CurrentCard`.
+- `PlayCardCount` made publicly readable in `Game66`; `PlayScreen_MouseClick` starts a 5-second `Timer` when `PlayCardCount > 0` and `LastRoundUserWon` is `false`, after which `SetComputerPlayerSelectedCard()` is called and the UI is invalidated to present the computer's card in `PlayScreen_Paint`.
+- `SetUserPlayerSelectedCard` uses `ComputerPlayer.CurrentCard` for `computerCard` when `PlayCardCount > 0` and `LastRoundUserWon` is `false`; otherwise, it runs the existing card-selection logic.
+- `PlayScreen` declares `private const int COMPUTER_USER_SELECT_TIME = 5000` and uses it for the `computerPlayTimer.Interval`.
 
 ---
 

@@ -3,6 +3,7 @@ namespace Cantace;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 
 /// <summary>
 /// Main form for the 66 card game.
@@ -12,12 +13,23 @@ public partial class PlayScreen : Form
 {
     private Game66 game66;
     private int selectedCardIndex = -1;
+    private Timer computerPlayTimer;
+    private const int COMPUTER_USER_SELECT_TIME = 5000;
 
     public PlayScreen()
     {
         InitializeComponent();
         game66 = new Game66();
         selectedCardIndex = -1;
+
+        computerPlayTimer = new Timer();
+        computerPlayTimer.Interval = COMPUTER_USER_SELECT_TIME;
+        computerPlayTimer.Tick += (s, e) =>
+        {
+            computerPlayTimer.Stop();
+            game66.SetComputerPlayerSelectedCard();
+            Invalidate();
+        };
     }
 
     private void ResetGameButton_Click(object sender, EventArgs e)
@@ -82,7 +94,7 @@ public partial class PlayScreen : Form
             if (e.X >= cardX && e.X <= cardX + cardWidth && e.Y >= startY && e.Y <= startY + cardHeight)
             {
                 Card selectedCard = userPlayerCards[i];
-                game66.PlaySelectedCard(selectedCard);
+                game66.SetUserPlayerSelectedCard(selectedCard);
                 
                 selectedCardIndex = i;
                 Invalidate();
@@ -95,7 +107,10 @@ public partial class PlayScreen : Form
                 {
                     MessageBox.Show("User player won!");
                 }
-
+                else if (game66.PlayCardCount > 0 && !game66.GetUserPlayer().LastRoundUserWon)
+                {
+                    computerPlayTimer.Start();
+                }
                 break;
             }
         }

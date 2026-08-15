@@ -10,7 +10,7 @@ public class Game66
     private const int TRUMP_CARD_INDEX = 12;
     public const int WIN_SCORE = 66;
 
-    private int PlayCardCount { get; set; } = 0;
+    public int PlayCardCount { get; private set; } = 0;
     private List<Card> Cards;
     private UserPlayer UserPlayer;
     private ComputerPlayer ComputerPlayer;
@@ -127,27 +127,35 @@ public class Game66
         return UserPlayer.GetCards().ToArray();
     }
 
-    public void PlaySelectedCard(Card selectedCard)
+    public void SetUserPlayerSelectedCard(Card selectedCard)
     {
         UserPlayer.RemoveCard(selectedCard);
         UserPlayer.CurrentCard = selectedCard;
 
-        Card? computerCard = GetComputerPlayerCardToPlayByCardType(selectedCard);
-        if (computerCard != null)
+        Card? computerCard;
+        if (PlayCardCount > 0 && !UserPlayer.LastRoundUserWon)
         {
-            ComputerPlayer.RemoveCard(computerCard);
+            computerCard = ComputerPlayer.CurrentCard;
         }
         else
         {
-            computerCard = GetComputerPlayerCardToPlayByTrumpCard(UserPlayer.TrumpCard);
-        }
-        if (computerCard != null)
-        {
-            ComputerPlayer.RemoveCard(computerCard);
-        }
-        else
-        {
-            computerCard = GetComputerPlayerSmallestCard(computerCard);
+            computerCard = GetComputerPlayerCardToPlayByCardType(selectedCard);
+            if (computerCard != null)
+            {
+                ComputerPlayer.RemoveCard(computerCard);
+            }
+            else
+            {
+                computerCard = GetComputerPlayerCardToPlayByTrumpCard(UserPlayer.TrumpCard);
+            }
+            if (computerCard != null)
+            {
+                ComputerPlayer.RemoveCard(computerCard);
+            }
+            else
+            {
+                computerCard = GetComputerPlayerSmallestCard(computerCard);
+            }
         }
         if (computerCard != null)
         {
@@ -215,6 +223,37 @@ public class Game66
                 }
             }
         }
+    }
+
+    public void SetComputerPlayerSelectedCard()
+    {
+        Card? selectedCard = null;
+
+        if (UserPlayer.TrumpCard != null)
+        {
+            string trumpSymbol = Player.GetCardSymbol(UserPlayer.TrumpCard.CardName);
+            foreach (Card card in ComputerPlayer.GetCards())
+            {
+                if (Player.GetCardSymbol(card.CardName) == trumpSymbol && card.CardValue == 11)
+                {
+                    selectedCard = card;
+                    break;
+                }
+            }
+        }
+
+        if (selectedCard == null)
+        {
+            selectedCard = GetComputerPlayerSmallestCard(null);
+        }
+
+        if (selectedCard != null)
+        {
+            ComputerPlayer.RemoveCard(selectedCard);
+            ComputerPlayer.CurrentCard = selectedCard;
+        }
+
+        UserPlayer.CurrentCard = null;
     }
 
     public Card? GetUserPlayerCurrentCard()
