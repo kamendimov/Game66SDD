@@ -160,6 +160,22 @@ public class Game66
             {
                 UserPlayer.IncrementScore((int)selectedCard.CardValue + (int)computerCard.CardValue);
                 UserPlayer.LastRoundUserWon = true;
+                
+                Card? fortyCard = UserPlayer.PlayForty();
+                if (fortyCard != null)
+                {
+                    SetUserPlayerSelectedCard(fortyCard);
+                    UserPlayer.CreateCatchPoupDamaForForty(fortyCard);
+                }
+                else
+                {
+                    Card? twentyCard = UserPlayer.PlayTwenty();
+                    if (twentyCard != null)
+                    {
+                        SetUserPlayerSelectedCard(twentyCard);
+                        UserPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
+                    }
+                }
             }
             else if (computerCardIsTrump && !userCardIsTrump)
             {
@@ -175,6 +191,22 @@ public class Game66
                     {
                         UserPlayer.IncrementScore(roundScore);
                         UserPlayer.LastRoundUserWon = true;
+                        
+                        Card? fortyCard = UserPlayer.PlayForty();
+                        if (fortyCard != null)
+                        {
+                            SetUserPlayerSelectedCard(fortyCard);
+                            UserPlayer.CreateCatchPoupDamaForForty(fortyCard);
+                        }
+                        else
+                        {
+                            Card? twentyCard = UserPlayer.PlayTwenty();
+                            if (twentyCard != null)
+                            {
+                                SetUserPlayerSelectedCard(twentyCard);
+                                UserPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
+                            }
+                        }
                     }
                     else if ((int)computerCard.CardValue > (int)selectedCard.CardValue)
                     {
@@ -187,10 +219,27 @@ public class Game66
                     if(UserPlayer.LastRoundUserWon)
                     {
                         UserPlayer.IncrementScore(roundScore);
+                        UserPlayer.LastRoundUserWon = true;
+                        Card? fortyCard = UserPlayer.PlayForty();
+                        if (fortyCard != null)
+                        {
+                            SetUserPlayerSelectedCard(fortyCard);
+                            UserPlayer.CreateCatchPoupDamaForForty(fortyCard);
+                        }
+                        else
+                        {
+                            Card? twentyCard = UserPlayer.PlayTwenty();
+                            if (twentyCard != null)
+                            {
+                                SetUserPlayerSelectedCard(twentyCard);
+                                UserPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
+                            }
+                        }
                     }
                     else
                     {
                         ComputerPlayer.IncrementScore(roundScore);
+                        UserPlayer.LastRoundUserWon = false;
                     }
                 }
             }
@@ -285,6 +334,25 @@ public class Game66
                     selectedCard = card;
                     break;
                 }
+            }
+        }
+
+        if (selectedCard == null)
+        {
+            Card? fortyCard = ComputerPlayer.PlayForty();
+            if (fortyCard != null)
+            {
+                selectedCard = fortyCard;
+                ComputerPlayer.CreateCatchPoupDamaForForty(fortyCard);
+            }
+            else
+            {
+                    Card? twentyCard = ComputerPlayer.PlayTwenty();
+                    if (twentyCard != null)
+                    {
+                        selectedCard = twentyCard;
+                        ComputerPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
+                    }
             }
         }
 

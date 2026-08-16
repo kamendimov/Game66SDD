@@ -10,15 +10,19 @@ public abstract class Player
 {
     protected List<Card> Cards;
     private int Score;
+    private const int TWENTY = 20;
+    private const int FORTY = 40;
 
     public Card? CurrentCard { get; set; }
     public bool GameClosed { get; set; }
     public bool LastRoundUserWon { get; set; }
     public Card? TrumpCard { get; set; }
+    public List<CatchPoupDama> CatchPoupDamaList { get; set; }
 
     protected Player()
     {
         Cards = new List<Card>();
+        CatchPoupDamaList = new List<CatchPoupDama>();
     }
 
     public void SetCard(Card card)
@@ -84,7 +88,8 @@ public abstract class Player
                     }
                     if (cardWithValue4 != null && cardWithValue3 != null)
                     {
-                        return cardWithValue3;
+                        IncrementScore(TWENTY);
+                        return cardWithValue4;
                     }
                 }
             }
@@ -116,9 +121,40 @@ public abstract class Player
             {
                 cardWithValue3 = card;
             }
+            if (cardWithValue4 != null && cardWithValue3 != null)
+            {
+                IncrementScore(FORTY);
+                return cardWithValue4;
+            }
         }
-        
-        return cardWithValue3;
+        return null;
     }
 
+    public void CreateCatchPoupDamaForTwenty(Card poupCard)
+    {
+        Card? damaCard = GetCards().FirstOrDefault(c => c.CardValue == Rank.Dama && c.CardName == poupCard.CardName);
+        if (damaCard != null)
+        {
+            CatchPoupDamaList.Add(new CatchPoupDama
+            {
+                CardPoup = poupCard,
+                CardDama = damaCard,
+                IsForty = false
+            });
+        }
+    }
+
+    public void CreateCatchPoupDamaForForty(Card poupCard)
+    {
+        Card? damaCard = GetCards().FirstOrDefault(c => c.CardValue == Rank.Dama && c.CardName == poupCard.CardName);
+        if (damaCard != null)
+        {
+            CatchPoupDamaList.Add(new CatchPoupDama
+            {
+                CardPoup = poupCard,
+                CardDama = damaCard,
+                IsForty = true
+            });
+        }
+    }
 }

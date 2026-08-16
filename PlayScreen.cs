@@ -53,34 +53,6 @@ public partial class PlayScreen : Form
         Invalidate();
     }
 
-    private void SetTwentyButton_Click(object sender, EventArgs e)
-    {
-        Card? twentyCard = game66.GetUserPlayer().PlayTwenty();
-        if (twentyCard != null)
-        {
-            game66.GetUserPlayer().IncrementScore(20);
-        }
-        if (game66.GetUserPlayerScore() >= Game66.WIN_SCORE)
-        {
-            MessageBox.Show("User Player won!");
-        }
-        Invalidate();
-    }
-
-    private void SetFourtyButton_Click(object sender, EventArgs e)
-    {
-        Card? fortyCard = game66.GetUserPlayer().PlayForty();
-        if (fortyCard != null)
-        {
-            game66.GetUserPlayer().IncrementScore(40);
-        }
-        if (game66.GetUserPlayerScore() >= Game66.WIN_SCORE)
-        {
-            MessageBox.Show("User Player won!");
-        }
-        Invalidate();
-    }
-
     private void CloseGameButton_Click(object sender, EventArgs e)
     {
         game66.GetUserPlayer().CloseTheGame();
@@ -127,39 +99,14 @@ public partial class PlayScreen : Form
     private void PlayScreen_Paint(object sender, PaintEventArgs e)
     {
         Graphics g = e.Graphics;
-        int x = 20;
-        int y = ClientSize.Height - 160;
+        DrawUserPlayerCards(g);
+        DrawTrumpCard(g);
+        DrawPlayScene(g);
+        DrawCatchedPoupDama(g);
+    }
 
-        List<Card> userPlayerCards = new List<Card>();
-        userPlayerCards.AddRange(game66.GetUserPlayerCards());
-        foreach (Card card in userPlayerCards)
-        {
-            string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, card.ImagePath);
-            if (File.Exists(imagePath))
-            {
-                Image cardImage = Image.FromFile(imagePath);
-                g.DrawImage(cardImage, x, y, 100, 140);
-
-                if (userPlayerCards.IndexOf(card) == selectedCardIndex)
-                {
-                    using Pen highlightPen = new Pen(Color.Yellow, 4);
-                    g.DrawRectangle(highlightPen, x, y, 100, 140);
-                }
-            }
-            x += 105;
-        }
-
-        Card? trumpCard = game66.GetUserPlayer().TrumpCard;
-        if (trumpCard != null)
-        {
-            string trumpImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, trumpCard.ImagePath);
-            if (File.Exists(trumpImagePath))
-            {
-                Image trumpImage = Image.FromFile(trumpImagePath);
-                g.DrawImage(trumpImage, ClientSize.Width - 120, 10, 100, 140);
-            }
-        }
-
+    private void DrawPlayScene(Graphics g)
+    {
         int userScore = game66.GetUserPlayerScore();
         int computerScore = game66.GetComputerPlayerScore();
 
@@ -202,6 +149,103 @@ public partial class PlayScreen : Form
                 Image computerImage = Image.FromFile(computerImagePath);
                 g.DrawImage(computerImage, middleX + 120, middleY, 100, 140);
             }
+        }
+    }
+
+    private void DrawCatchedPoupDama(Graphics g)
+    {
+        int catchCardWidth = 50;
+        int catchCardHeight = 70;
+        int catchCardSpacing = 55;
+        int catchY = ClientSize.Height - 160 - catchCardHeight - 10;
+
+        int catchX = 10;
+        foreach (CatchPoupDama catchItem in game66.GetComputerPlayer().CatchPoupDamaList)
+        {
+            if (catchItem.CardPoup != null)
+            {
+                string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, catchItem.CardPoup.ImagePath);
+                if (File.Exists(imagePath))
+                {
+                    Image cardImage = Image.FromFile(imagePath);
+                    g.DrawImage(cardImage, catchX, catchY, catchCardWidth, catchCardHeight);
+                }
+            }
+            catchX += catchCardSpacing;
+            if (catchItem.CardDama != null)
+            {
+                string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, catchItem.CardDama.ImagePath);
+                if (File.Exists(imagePath))
+                {
+                    Image cardImage = Image.FromFile(imagePath);
+                    g.DrawImage(cardImage, catchX, catchY, catchCardWidth, catchCardHeight);
+                }
+            }
+            catchX += catchCardSpacing;
+        }
+
+        catchX = ClientSize.Width - 10 - catchCardWidth;
+        foreach (CatchPoupDama catchItem in game66.GetUserPlayer().CatchPoupDamaList)
+        {
+            if (catchItem.CardPoup != null)
+            {
+                string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, catchItem.CardPoup.ImagePath);
+                if (File.Exists(imagePath))
+                {
+                    Image cardImage = Image.FromFile(imagePath);
+                    g.DrawImage(cardImage, catchX, catchY, catchCardWidth, catchCardHeight);
+                }
+            }
+            catchX -= catchCardSpacing;
+            if (catchItem.CardDama != null)
+            {
+                string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, catchItem.CardDama.ImagePath);
+                if (File.Exists(imagePath))
+                {
+                    Image cardImage = Image.FromFile(imagePath);
+                    g.DrawImage(cardImage, catchX, catchY, catchCardWidth, catchCardHeight);
+                }
+            }
+            catchX -= catchCardSpacing;
+        }
+    }
+
+    private void DrawTrumpCard(Graphics g)
+    {
+        Card? trumpCard = game66.GetUserPlayer().TrumpCard;
+        if (trumpCard != null)
+        {
+            string trumpImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, trumpCard.ImagePath);
+            if (File.Exists(trumpImagePath))
+            {
+                Image trumpImage = Image.FromFile(trumpImagePath);
+                g.DrawImage(trumpImage, ClientSize.Width - 120, 10, 100, 140);
+            }
+        }
+    }
+
+    private void DrawUserPlayerCards(Graphics g)
+    {
+        int x = 20;
+        int y = ClientSize.Height - 160;
+
+        List<Card> userPlayerCards = new List<Card>();
+        userPlayerCards.AddRange(game66.GetUserPlayerCards());
+        foreach (Card card in userPlayerCards)
+        {
+            string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, card.ImagePath);
+            if (File.Exists(imagePath))
+            {
+                Image cardImage = Image.FromFile(imagePath);
+                g.DrawImage(cardImage, x, y, 100, 140);
+
+                if (userPlayerCards.IndexOf(card) == selectedCardIndex)
+                {
+                    using Pen highlightPen = new Pen(Color.Yellow, 4);
+                    g.DrawRectangle(highlightPen, x, y, 100, 140);
+                }
+            }
+            x += 105;
         }
     }
 }
