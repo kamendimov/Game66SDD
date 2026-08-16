@@ -14,18 +14,25 @@ public class UserPlayer : Player
         }
     }
 
-    public override Card? ChangeTrumpCard(int computerPlayerScore)
+    public override Card? ChangeTrumpCard(int computerPlayerScore, Card? trumpCard)
     {
-        if (TrumpCard == null) return null;
-        if (GameClosed) return null;
-        if (GetScore() <= computerPlayerScore) return null;
-        
-        Suit trumpSymbol = TrumpCard.CardName;
+        if (trumpCard == null)
+        {
+            return null;
+        }
+        if (GameClosed)
+        {
+            return null;
+        }
+        if (GetScore() <= computerPlayerScore)
+        {
+            return null;
+        }
         
         Card? zeroValueMatch = null;
         foreach (Card userCard in GetCards())
         {
-            if (userCard.CardValue == Rank.Nine && userCard.CardName == trumpSymbol)
+            if (userCard.CardValue == Rank.Nine && userCard.CardName == trumpCard.CardName)
             {
                 zeroValueMatch = userCard;
                 break;
@@ -34,12 +41,12 @@ public class UserPlayer : Player
         
         if (zeroValueMatch != null)
         {
-            Card oldTrumpCard = TrumpCard;
+            Card oldTrumpCard = trumpCard;
             RemoveCard(zeroValueMatch);
             SetCard(oldTrumpCard);
-            TrumpCard = zeroValueMatch;
+            trumpCard = zeroValueMatch;
         }
         
-        return TrumpCard;
+        return trumpCard;
     }
 }

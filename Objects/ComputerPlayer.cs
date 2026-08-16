@@ -12,17 +12,7 @@ public class ComputerPlayer : Player
     {
     }
 
-    public override Card? ChangeTrumpCard(int computerPlayerScore)
-    {
-        return null;
-    }
-
-    public override Card? PlayTwenty()
-    {
-        return null;
-    }
-
-    public override Card? PlayForty()
+    public override Card? ChangeTrumpCard(int computerPlayerScore, Card? trumpCard)
     {
         return null;
     }
@@ -42,14 +32,15 @@ public class ComputerPlayer : Player
 
     public Card? GetComputerPlayerCardToPlayByCardType(Card? selectedCard)
     {
-        if (selectedCard == null) return null;
-        
-        Suit symbol = selectedCard.CardName;
+        if (selectedCard == null)
+        {
+            return null;
+        }
         
         Card? bestMatch = null;
         foreach (Card computerCard in GetCards())
         {
-            if (computerCard.CardName == symbol && (int)computerCard.CardValue > (int)selectedCard.CardValue)
+            if (computerCard.CardName == selectedCard.CardName && (int)computerCard.CardValue > (int)selectedCard.CardValue)
             {
                 if (bestMatch == null || (int)computerCard.CardValue < (int)bestMatch.CardValue)
                 {
@@ -63,14 +54,15 @@ public class ComputerPlayer : Player
 
     public Card? GetComputerPlayerCardToPlayByTrumpCard(Card? trumpCard)
     {
-        if (trumpCard == null) return null;
-        
-        Suit symbol = trumpCard.CardName;
+        if (trumpCard == null)
+        {
+            return null;
+        }
         
         Card? bestMatch = null;
         foreach (Card computerCard in GetCards())
         {
-            if (computerCard.CardName == symbol)
+            if (computerCard.CardName == trumpCard.CardName)
             {
                 if (bestMatch == null || (int)computerCard.CardValue < (int)bestMatch.CardValue)
                 {
@@ -85,21 +77,17 @@ public class ComputerPlayer : Player
     public Card? SetNextComputerPlayerCard(Card selectedCard, Card? trumpCard)
     {
         Card? computerCard = GetComputerPlayerCardToPlayByCardType(selectedCard);
-        if (computerCard != null)
-        {
-            RemoveCard(computerCard);
-        }
-        else
+        if (computerCard == null)
         {
             computerCard = GetComputerPlayerCardToPlayByTrumpCard(trumpCard);
         }
+        if (computerCard == null)
+        {
+            computerCard = GetComputerPlayerSmallestCard(computerCard);
+        }
         if (computerCard != null)
         {
             RemoveCard(computerCard);
-        }
-        else
-        {
-            computerCard = GetComputerPlayerSmallestCard(computerCard);
         }
         return computerCard;
     }

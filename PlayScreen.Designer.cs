@@ -17,6 +17,12 @@ partial class PlayScreen
         {
             components.Dispose();
         }
+        if (disposing)
+        {
+            mBrush?.Dispose();
+            mFont?.Dispose();
+            mHighlightPen?.Dispose();
+        }
         base.Dispose(disposing);
     }
 

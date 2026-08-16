@@ -9,14 +9,13 @@ using System;
 public abstract class Player
 {
     protected List<Card> Cards;
-    private int Score;
-    private const int TWENTY = 20;
-    private const int FORTY = 40;
+    private int mScore;
+    private const int sTWENTY = 20;
+    private const int sFORTY = 40;
 
     public Card? CurrentCard { get; set; }
     public bool GameClosed { get; set; }
     public bool LastRoundUserWon { get; set; }
-    public Card? TrumpCard { get; set; }
     public List<CatchPoupDama> CatchPoupDamaList { get; set; }
 
     protected Player()
@@ -47,27 +46,30 @@ public abstract class Player
 
     public void IncrementScore(int value)
     {
-        Score += value;
+        mScore += value;
     }
 
     public int GetScore()
     {
-        return Score;
+        return mScore;
     }
 
     public void ResetScore()
     {
-        Score = 0;
+        mScore = 0;
     }
 
     public abstract void CloseTheGame();
-    public abstract Card? ChangeTrumpCard(int computerPlayerScore);
+    public abstract Card? ChangeTrumpCard(int computerPlayerScore, Card? trumpCard);
 
-    public virtual Card? PlayTwenty()
+    public virtual Card? PlayTwenty(Card? trumpCard)
     {
-        if (!LastRoundUserWon) return null;
+        if (!LastRoundUserWon)
+        {
+            return null;
+        }
         
-        Suit? trumpSymbol = TrumpCard != null ? TrumpCard.CardName : null;
+        Suit? trumpSymbol = trumpCard != null ? trumpCard.CardName : null;
         
         foreach (Suit suit in Enum.GetValues(typeof(Suit)))
         {
@@ -88,7 +90,7 @@ public abstract class Player
                     }
                     if (cardWithValue4 != null && cardWithValue3 != null)
                     {
-                        IncrementScore(TWENTY);
+                        IncrementScore(sTWENTY);
                         return cardWithValue4;
                     }
                 }
@@ -98,32 +100,34 @@ public abstract class Player
         return null;
     }
 
-    public virtual Card? PlayForty()
+    public virtual Card? PlayForty(Card? trumpCard)
     {
-        if (!LastRoundUserWon) return null;
+        if (!LastRoundUserWon)
+        {
+            return null;
+        }
         
-        if (TrumpCard == null) return null;
-        
-        Suit trumpSymbol = TrumpCard.CardName;
+        if (trumpCard == null)
+        {
+            return null;
+        }
         
         Card? cardWithValue4 = null;
         Card? cardWithValue3 = null;
         
         foreach (Card card in GetCards())
         {
-            Suit symbol = card.CardName;
-            
-            if (card.CardValue == Rank.Poup && symbol == trumpSymbol)
+            if (card.CardValue == Rank.Poup && card.CardName == trumpCard.CardName)
             {
                 cardWithValue4 = card;
             }
-            else if (card.CardValue == Rank.Dama && symbol == trumpSymbol)
+            else if (card.CardValue == Rank.Dama && card.CardName == trumpCard.CardName)
             {
                 cardWithValue3 = card;
             }
             if (cardWithValue4 != null && cardWithValue3 != null)
             {
-                IncrementScore(FORTY);
+                IncrementScore(sFORTY);
                 return cardWithValue4;
             }
         }

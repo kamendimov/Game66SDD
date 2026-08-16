@@ -11,51 +11,57 @@ using System.Windows.Forms;
 /// </summary>
 public partial class PlayScreen : Form
 {
-    private Game66 game66;
-    private int selectedCardIndex = -1;
-    private Timer computerPlayTimer;
-    private const int COMPUTER_USER_SELECT_TIME = 2000;
+    private Game66 mGame66;
+    private int mSelectedCardIndex = -1;
+    private Timer mComputerPlayTimer;
+    private const int sCOMPUTER_USER_SELECT_TIME = 2000;
+    private SolidBrush mBrush;
+    private Font mFont;
+    private Pen mHighlightPen;
 
     public PlayScreen()
     {
         InitializeComponent();
-        game66 = new Game66();
-        selectedCardIndex = -1;
+        mGame66 = new Game66();
+        mSelectedCardIndex = -1;
+        mBrush = new SolidBrush(Color.Black);
+        mFont = new Font("Arial", 16, FontStyle.Bold);
+        mHighlightPen = new Pen(Color.Yellow, 4);
 
-        computerPlayTimer = new Timer();
-        computerPlayTimer.Interval = COMPUTER_USER_SELECT_TIME;
-        computerPlayTimer.Tick += (s, e) =>
+        mComputerPlayTimer = new Timer();
+        mComputerPlayTimer.Interval = sCOMPUTER_USER_SELECT_TIME;
+        mComputerPlayTimer.Tick += (s, e) =>
         {
-            computerPlayTimer.Stop();
-            game66.SetComputerPlayerSelectedCard();
+            mComputerPlayTimer.Stop();
+            mGame66.SetComputerPlayerSelectedCard();
             Invalidate();
         };
     }
 
     private void ResetGameButton_Click(object sender, EventArgs e)
     {
-        game66.ResetGame();
-        selectedCardIndex = -1;
+        mGame66.ResetGame();
+        mSelectedCardIndex = -1;
         Invalidate();
     }
 
     private void SetCardsButton_Click(object sender, EventArgs e)
     {
-        game66.MixCards();
-        game66.DistributeCards();
-        selectedCardIndex = -1;
+        mGame66.MixCards();
+        mGame66.DistributeCards();
+        mSelectedCardIndex = -1;
         Invalidate();
     }
 
     private void ChangeTrumpCardButton_Click(object sender, EventArgs e)
     {
-        game66.ChangeTrumpCard();
+        mGame66.ChangeTrumpCard();
         Invalidate();
     }
 
     private void CloseGameButton_Click(object sender, EventArgs e)
     {
-        game66.GetUserPlayer().CloseTheGame();
+        mGame66.GetUserPlayer().CloseTheGame();
         Invalidate();
     }
 
@@ -67,29 +73,29 @@ public partial class PlayScreen : Form
         int startX = 20;
         int startY = ClientSize.Height - 160;
 
-        Card[] userPlayerCards = game66.GetUserPlayerCards().ToArray();
+        Card[] userPlayerCards = mGame66.GetUserPlayerCards().ToArray();
         for (int i = 0; i < userPlayerCards.Length; i++)
         {
             int cardX = startX + i * cardSpacing;
             if (e.X >= cardX && e.X <= cardX + cardWidth && e.Y >= startY && e.Y <= startY + cardHeight)
             {
                 Card selectedCard = userPlayerCards[i];
-                game66.SetUserPlayerSelectedCard(selectedCard);
+                mGame66.SetUserPlayerSelectedCard(selectedCard);
                 
-                selectedCardIndex = i;
+                mSelectedCardIndex = i;
                 Invalidate();
 
-                if (game66.GetComputerPlayerScore() >= Game66.WIN_SCORE)
+                if (mGame66.GetComputerPlayerScore() >= Game66.WIN_SCORE)
                 {
                     MessageBox.Show("Computer Player won!");
                 }
-                else if (game66.GetUserPlayerScore() >= Game66.WIN_SCORE)
+                else if (mGame66.GetUserPlayerScore() >= Game66.WIN_SCORE)
                 {
                     MessageBox.Show("User player won!");
                 }
-                else if (game66.PlayCardCount > 0 && !game66.GetUserPlayer().LastRoundUserWon)
+                else if (mGame66.PlayCardCount > 0 && !mGame66.GetUserPlayer().LastRoundUserWon)
                 {
-                    computerPlayTimer.Start();
+                    mComputerPlayTimer.Start();
                 }
                 break;
             }
@@ -107,26 +113,23 @@ public partial class PlayScreen : Form
 
     private void DrawPlayScene(Graphics g)
     {
-        int userScore = game66.GetUserPlayerScore();
-        int computerScore = game66.GetComputerPlayerScore();
+        int userScore = mGame66.GetUserPlayerScore();
+        int computerScore = mGame66.GetComputerPlayerScore();
 
         string userScoreText = $"You: {userScore}";
         string computerScoreText = $"Computer: {computerScore}";
 
-        using SolidBrush brush = new SolidBrush(Color.Black);
-        using Font font = new Font("Arial", 16, FontStyle.Bold);
-
-        SizeF userScoreSize = g.MeasureString(userScoreText, font);
-        SizeF computerScoreSize = g.MeasureString(computerScoreText, font);
+        SizeF userScoreSize = g.MeasureString(userScoreText, mFont);
+        SizeF computerScoreSize = g.MeasureString(computerScoreText, mFont);
 
         float totalWidth = userScoreSize.Width + 20 + computerScoreSize.Width;
         float startX = (ClientSize.Width - totalWidth) / 2;
 
-        g.DrawString(userScoreText, font, brush, startX, 10);
-        g.DrawString(computerScoreText, font, brush, startX + userScoreSize.Width + 20, 10);
+        g.DrawString(userScoreText, mFont, mBrush, startX, 10);
+        g.DrawString(computerScoreText, mFont, mBrush, startX + userScoreSize.Width + 20, 10);
 
-        Card? userCard = game66.GetUserPlayerCurrentCard();
-        Card? computerCard = game66.GetComputerPlayerCurrentCard();
+        Card? userCard = mGame66.GetUserPlayerCurrentCard();
+        Card? computerCard = mGame66.GetComputerPlayerCurrentCard();
 
         int middleX = (ClientSize.Width - 220) / 2;
         int middleY = (ClientSize.Height - 140) / 2;
@@ -160,7 +163,7 @@ public partial class PlayScreen : Form
         int catchY = ClientSize.Height - 160 - catchCardHeight - 10;
 
         int catchX = 10;
-        foreach (CatchPoupDama catchItem in game66.GetComputerPlayer().CatchPoupDamaList)
+        foreach (CatchPoupDama catchItem in mGame66.GetComputerPlayer().CatchPoupDamaList)
         {
             if (catchItem.CardPoup != null)
             {
@@ -185,7 +188,7 @@ public partial class PlayScreen : Form
         }
 
         catchX = ClientSize.Width - 10 - catchCardWidth;
-        foreach (CatchPoupDama catchItem in game66.GetUserPlayer().CatchPoupDamaList)
+        foreach (CatchPoupDama catchItem in mGame66.GetUserPlayer().CatchPoupDamaList)
         {
             if (catchItem.CardPoup != null)
             {
@@ -212,7 +215,7 @@ public partial class PlayScreen : Form
 
     private void DrawTrumpCard(Graphics g)
     {
-        Card? trumpCard = game66.GetUserPlayer().TrumpCard;
+        Card? trumpCard = mGame66.TrumpCard;
         if (trumpCard != null)
         {
             string trumpImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, trumpCard.ImagePath);
@@ -230,7 +233,7 @@ public partial class PlayScreen : Form
         int y = ClientSize.Height - 160;
 
         List<Card> userPlayerCards = new List<Card>();
-        userPlayerCards.AddRange(game66.GetUserPlayerCards());
+        userPlayerCards.AddRange(mGame66.GetUserPlayerCards());
         foreach (Card card in userPlayerCards)
         {
             string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, card.ImagePath);
@@ -239,10 +242,9 @@ public partial class PlayScreen : Form
                 Image cardImage = Image.FromFile(imagePath);
                 g.DrawImage(cardImage, x, y, 100, 140);
 
-                if (userPlayerCards.IndexOf(card) == selectedCardIndex)
+                if (userPlayerCards.IndexOf(card) == mSelectedCardIndex)
                 {
-                    using Pen highlightPen = new Pen(Color.Yellow, 4);
-                    g.DrawRectangle(highlightPen, x, y, 100, 140);
+                    g.DrawRectangle(mHighlightPen, x, y, 100, 140);
                 }
             }
             x += 105;

@@ -6,56 +6,57 @@ namespace Cantace;
 /// </summary>
 public class Game66
 {
-    private const int PLAYER_CARDS = 3;
-    private const int TRUMP_CARD_INDEX = 12;
+    private const int sPLAYER_CARDS = 3;
+    private const int sTRUMP_CARD_INDEX = 12;
     public const int WIN_SCORE = 66;
 
     public int PlayCardCount { get; private set; } = 0;
-    private List<Card> Cards;
-    private UserPlayer UserPlayer;
-    private ComputerPlayer ComputerPlayer;
+    public Card? TrumpCard { get; set; } = null;
+    private List<Card> mCards;
+    private UserPlayer mUserPlayer;
+    private ComputerPlayer mComputerPlayer;
 
     public Game66()
     {
-        UserPlayer = new UserPlayer();
-        ComputerPlayer = new ComputerPlayer();
+        mUserPlayer = new UserPlayer();
+        mComputerPlayer = new ComputerPlayer();
 
-        Cards = new List<Card>();
-        Cards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Aso, Index = 1, ImagePath = "Images\\AsoPika.png" });
-        Cards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Aso, Index = 2, ImagePath = "Images\\AsoKupa.png" });
-        Cards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Aso, Index = 3, ImagePath = "Images\\AsoKare.png" });
-        Cards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Aso, Index = 4, ImagePath = "Images\\AsoSpatia.png" });
+        mCards = new List<Card>();
+        mCards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Aso, Index = 1, ImagePath = "Images\\AsoPika.png" });
+        mCards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Aso, Index = 2, ImagePath = "Images\\AsoKupa.png" });
+        mCards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Aso, Index = 3, ImagePath = "Images\\AsoKare.png" });
+        mCards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Aso, Index = 4, ImagePath = "Images\\AsoSpatia.png" });
 
-        Cards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Ten, Index = 5, ImagePath = "Images\\TenPika.png" });
-        Cards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Ten, Index = 6, ImagePath = "Images\\TenKupa.png" });
-        Cards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Ten, Index = 7, ImagePath = "Images\\TenKare.png" });
-        Cards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Ten, Index = 8, ImagePath = "Images\\TenSpatia.png" });
+        mCards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Ten, Index = 5, ImagePath = "Images\\TenPika.png" });
+        mCards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Ten, Index = 6, ImagePath = "Images\\TenKupa.png" });
+        mCards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Ten, Index = 7, ImagePath = "Images\\TenKare.png" });
+        mCards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Ten, Index = 8, ImagePath = "Images\\TenSpatia.png" });
 
-        Cards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Poup, Index = 9, ImagePath = "Images\\PoupPika.png" });
-        Cards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Poup, Index = 10, ImagePath = "Images\\PoupKupa.png" });
-        Cards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Poup, Index = 11, ImagePath = "Images\\PoupKare.png" });
-        Cards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Poup, Index = 12, ImagePath = "Images\\PoupSpatia.png" });
+        mCards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Poup, Index = 9, ImagePath = "Images\\PoupPika.png" });
+        mCards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Poup, Index = 10, ImagePath = "Images\\PoupKupa.png" });
+        mCards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Poup, Index = 11, ImagePath = "Images\\PoupKare.png" });
+        mCards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Poup, Index = 12, ImagePath = "Images\\PoupSpatia.png" });
 
-        Cards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Dama, Index = 13, ImagePath = "Images\\DamaPika.png" });
-        Cards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Dama, Index = 14, ImagePath = "Images\\DamaKupa.png" });
-        Cards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Dama, Index = 15, ImagePath = "Images\\DamaKare.png" });
-        Cards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Dama, Index = 16, ImagePath = "Images\\DamaSpatia.png" });
+        mCards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Dama, Index = 13, ImagePath = "Images\\DamaPika.png" });
+        mCards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Dama, Index = 14, ImagePath = "Images\\DamaKupa.png" });
+        mCards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Dama, Index = 15, ImagePath = "Images\\DamaKare.png" });
+        mCards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Dama, Index = 16, ImagePath = "Images\\DamaSpatia.png" });
 
-        Cards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Vale, Index = 17, ImagePath = "Images\\ValePika.png" });
-        Cards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Vale, Index = 18, ImagePath = "Images\\ValeKupa.png" });
-        Cards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Vale, Index = 19, ImagePath = "Images\\ValeKare.png" });
-        Cards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Vale, Index = 20, ImagePath = "Images\\ValeSpatia.png" });
+        mCards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Vale, Index = 17, ImagePath = "Images\\ValePika.png" });
+        mCards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Vale, Index = 18, ImagePath = "Images\\ValeKupa.png" });
+        mCards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Vale, Index = 19, ImagePath = "Images\\ValeKare.png" });
+        mCards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Vale, Index = 20, ImagePath = "Images\\ValeSpatia.png" });
 
-        Cards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Nine, Index = 21, ImagePath = "Images\\NinePika.png" });
-        Cards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Nine, Index = 22, ImagePath = "Images\\NineKupa.png" });
-        Cards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Nine, Index = 23, ImagePath = "Images\\NineKare.png" });
-        Cards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Nine, Index = 24, ImagePath = "Images\\NineSpatia.png" });
+        mCards.Add(new Card { CardName = Suit.Pika, CardValue = Rank.Nine, Index = 21, ImagePath = "Images\\NinePika.png" });
+        mCards.Add(new Card { CardName = Suit.Kupa, CardValue = Rank.Nine, Index = 22, ImagePath = "Images\\NineKupa.png" });
+        mCards.Add(new Card { CardName = Suit.Kare, CardValue = Rank.Nine, Index = 23, ImagePath = "Images\\NineKare.png" });
+        mCards.Add(new Card { CardName = Suit.Spatia, CardValue = Rank.Nine, Index = 24, ImagePath = "Images\\NineSpatia.png" });
     }
 
     public void MixCards()
     {
-        List<Card> shuffled = new List<Card>(Cards);
-        Cards.Clear();
+        List<Card> shuffled = new List<Card>(mCards);
+        mCards.Clear();
         Random random = new Random();
 
         for (int i = shuffled.Count - 1; i > 0; i--)
@@ -74,113 +75,115 @@ public class Game66
         result.AddRange(secondHalf);
         result.AddRange(firstHalf);
         
-        Cards.AddRange(result.ToArray());
+        mCards.AddRange(result.ToArray());
     }
 
     public void ResetGame()
     {
-        Cards.Sort((a, b) => a.Index.CompareTo(b.Index));
-        UserPlayer.ClearCards();
-        ComputerPlayer.ClearCards();
-        UserPlayer.CurrentCard = null;
-        ComputerPlayer.CurrentCard = null;
-        UserPlayer.TrumpCard = null;
-        UserPlayer.ResetScore();
-        ComputerPlayer.ResetScore();
-        UserPlayer.LastRoundUserWon = false;
-        UserPlayer.GameClosed = false;
+        mCards.Sort((a, b) => a.Index.CompareTo(b.Index));
+        mUserPlayer.ClearCards();
+        mComputerPlayer.ClearCards();
+        mUserPlayer.CurrentCard = null;
+        mComputerPlayer.CurrentCard = null;
+        TrumpCard = null;
+        mUserPlayer.ResetScore();
+        mComputerPlayer.ResetScore();
+        mUserPlayer.LastRoundUserWon = false;
+        mUserPlayer.GameClosed = false;
+        mUserPlayer.CatchPoupDamaList.Clear();
+        mComputerPlayer.CatchPoupDamaList.Clear();
     }
 
     public void DistributeCards()
     {
-        UserPlayer.ClearCards();
-        ComputerPlayer.ClearCards();
+        mUserPlayer.ClearCards();
+        mComputerPlayer.ClearCards();
         PlayCardCount = 0;
-        UserPlayer.LastRoundUserWon = false;
-        UserPlayer.GameClosed = false;
-        for (int i = 0; i < PLAYER_CARDS; i++)
+        mUserPlayer.LastRoundUserWon = false;
+        mUserPlayer.GameClosed = false;
+        for (int i = 0; i < sPLAYER_CARDS; i++)
         {
-            UserPlayer.SetCard(Cards[i]);
+            mUserPlayer.SetCard(mCards[i]);
         }
-        for (int i = 3; i < PLAYER_CARDS + 3; i++)
+        for (int i = 3; i < sPLAYER_CARDS + 3; i++)
         {
-            ComputerPlayer.SetCard(Cards[i]);
+            mComputerPlayer.SetCard(mCards[i]);
         }
-        for (int i = 6; i < PLAYER_CARDS + 6; i++)
+        for (int i = 6; i < sPLAYER_CARDS + 6; i++)
         {
-            UserPlayer.SetCard(Cards[i]);
+            mUserPlayer.SetCard(mCards[i]);
         }
-        for (int i = 9; i < PLAYER_CARDS + 9; i++)
+        for (int i = 9; i < sPLAYER_CARDS + 9; i++)
         {
-            ComputerPlayer.SetCard(Cards[i]);
+            mComputerPlayer.SetCard(mCards[i]);
         }
-        UserPlayer.TrumpCard = Cards[TRUMP_CARD_INDEX];
+        TrumpCard = mCards[sTRUMP_CARD_INDEX];
     }
 
     public UserPlayer GetUserPlayer()
     {
-        return UserPlayer;
+        return mUserPlayer;
     }
 
     public ComputerPlayer GetComputerPlayer()
     {
-        return ComputerPlayer;
+        return mComputerPlayer;
     }
 
     public Card[] GetUserPlayerCards()
     {
-        return UserPlayer.GetCards().ToArray();
+        return mUserPlayer.GetCards().ToArray();
     }
 
     public void SetUserPlayerSelectedCard(Card selectedCard)
     {
-        UserPlayer.RemoveCard(selectedCard);
-        UserPlayer.CurrentCard = selectedCard;
+        mUserPlayer.RemoveCard(selectedCard);
+        mUserPlayer.CurrentCard = selectedCard;
 
         Card? computerCard;
-        if (PlayCardCount > 0 && !UserPlayer.LastRoundUserWon)
+        if (PlayCardCount > 0 && !mUserPlayer.LastRoundUserWon)
         {
-            computerCard = ComputerPlayer.CurrentCard;
+            computerCard = mComputerPlayer.CurrentCard;
         }
         else
         {
-            computerCard = ComputerPlayer.SetNextComputerPlayerCard(selectedCard, UserPlayer.TrumpCard);
+            computerCard = mComputerPlayer.SetNextComputerPlayerCard(selectedCard, TrumpCard);
         }
         if (computerCard != null)
         {
-            ComputerPlayer.RemoveCard(computerCard);
-            ComputerPlayer.CurrentCard = computerCard;
+            mComputerPlayer.RemoveCard(computerCard);
+            mComputerPlayer.CurrentCard = computerCard;
 
-            bool userCardIsTrump = UserPlayer.TrumpCard != null &&
-                selectedCard.CardName == UserPlayer.TrumpCard.CardName;
-            bool computerCardIsTrump = UserPlayer.TrumpCard != null &&
-                computerCard.CardName == UserPlayer.TrumpCard.CardName;
+            bool userCardIsTrump = TrumpCard != null &&
+                selectedCard.CardName == TrumpCard.CardName;
+            bool computerCardIsTrump = TrumpCard != null &&
+                computerCard.CardName == TrumpCard.CardName;
 
             if (userCardIsTrump && !computerCardIsTrump)
             {
-                UserPlayer.IncrementScore((int)selectedCard.CardValue + (int)computerCard.CardValue);
-                UserPlayer.LastRoundUserWon = true;
+                mUserPlayer.IncrementScore((int)selectedCard.CardValue + (int)computerCard.CardValue);
+                mUserPlayer.LastRoundUserWon = true;
                 
-                Card? fortyCard = UserPlayer.PlayForty();
+                Card? fortyCard = mUserPlayer.PlayForty(TrumpCard);
                 if (fortyCard != null)
                 {
                     SetUserPlayerSelectedCard(fortyCard);
-                    UserPlayer.CreateCatchPoupDamaForForty(fortyCard);
+                    mUserPlayer.CreateCatchPoupDamaForForty(fortyCard);
                 }
                 else
                 {
-                    Card? twentyCard = UserPlayer.PlayTwenty();
+                    Card? twentyCard = mUserPlayer.PlayTwenty(TrumpCard);
                     if (twentyCard != null)
                     {
                         SetUserPlayerSelectedCard(twentyCard);
-                        UserPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
+                        mUserPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
                     }
                 }
             }
             else if (computerCardIsTrump && !userCardIsTrump)
             {
-                ComputerPlayer.IncrementScore((int)selectedCard.CardValue + (int)computerCard.CardValue);
-                UserPlayer.LastRoundUserWon = false;
+                mComputerPlayer.IncrementScore((int)selectedCard.CardValue + (int)computerCard.CardValue);
+                mUserPlayer.LastRoundUserWon = false;
             }
             else
             {
@@ -189,69 +192,69 @@ public class Game66
                 {
                     if ((int)selectedCard.CardValue > (int)computerCard.CardValue)
                     {
-                        UserPlayer.IncrementScore(roundScore);
-                        UserPlayer.LastRoundUserWon = true;
+                        mUserPlayer.IncrementScore(roundScore);
+                        mUserPlayer.LastRoundUserWon = true;
                         
-                        Card? fortyCard = UserPlayer.PlayForty();
+                        Card? fortyCard = mUserPlayer.PlayForty(TrumpCard);
                         if (fortyCard != null)
                         {
                             SetUserPlayerSelectedCard(fortyCard);
-                            UserPlayer.CreateCatchPoupDamaForForty(fortyCard);
+                            mUserPlayer.CreateCatchPoupDamaForForty(fortyCard);
                         }
                         else
                         {
-                            Card? twentyCard = UserPlayer.PlayTwenty();
+                            Card? twentyCard = mUserPlayer.PlayTwenty(TrumpCard);
                             if (twentyCard != null)
                             {
                                 SetUserPlayerSelectedCard(twentyCard);
-                                UserPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
+                                mUserPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
                             }
                         }
                     }
                     else if ((int)computerCard.CardValue > (int)selectedCard.CardValue)
                     {
-                        ComputerPlayer.IncrementScore(roundScore);
-                        UserPlayer.LastRoundUserWon = false;
+                        mComputerPlayer.IncrementScore(roundScore);
+                        mUserPlayer.LastRoundUserWon = false;
                     }
                 }
                 else
                 {
-                    if(UserPlayer.LastRoundUserWon)
+                    if(mUserPlayer.LastRoundUserWon)
                     {
-                        UserPlayer.IncrementScore(roundScore);
-                        UserPlayer.LastRoundUserWon = true;
-                        Card? fortyCard = UserPlayer.PlayForty();
+                        mUserPlayer.IncrementScore(roundScore);
+                        mUserPlayer.LastRoundUserWon = true;
+                        Card? fortyCard = mUserPlayer.PlayForty(TrumpCard);
                         if (fortyCard != null)
                         {
                             SetUserPlayerSelectedCard(fortyCard);
-                            UserPlayer.CreateCatchPoupDamaForForty(fortyCard);
+                            mUserPlayer.CreateCatchPoupDamaForForty(fortyCard);
                         }
                         else
                         {
-                            Card? twentyCard = UserPlayer.PlayTwenty();
+                            Card? twentyCard = mUserPlayer.PlayTwenty(TrumpCard);
                             if (twentyCard != null)
                             {
                                 SetUserPlayerSelectedCard(twentyCard);
-                                UserPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
+                                mUserPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
                             }
                         }
                     }
                     else
                     {
-                        ComputerPlayer.IncrementScore(roundScore);
-                        UserPlayer.LastRoundUserWon = false;
+                        mComputerPlayer.IncrementScore(roundScore);
+                        mUserPlayer.LastRoundUserWon = false;
                     }
                 }
             }
 
-            if ((UserPlayer.GameClosed && UserPlayer.GetScore() >= Game66.WIN_SCORE) || 
-                (ComputerPlayer.GameClosed && ComputerPlayer.GetScore() >= Game66.WIN_SCORE))
+            if ((mUserPlayer.GameClosed && mUserPlayer.GetScore() >= Game66.WIN_SCORE) || 
+                (mComputerPlayer.GameClosed && mComputerPlayer.GetScore() >= Game66.WIN_SCORE))
             {
-                UserPlayer.ClearCards();
-                ComputerPlayer.ClearCards();
+                mUserPlayer.ClearCards();
+                mComputerPlayer.ClearCards();
             }
 
-            if (!UserPlayer.GameClosed && !ComputerPlayer.GameClosed)
+            if (!mUserPlayer.GameClosed && !mComputerPlayer.GameClosed)
             {
                 SetPlayersCards();
             }
@@ -260,7 +263,7 @@ public class Game66
 
     private void SetPlayersCards()
     {
-        if (UserPlayer.LastRoundUserWon)
+        if (mUserPlayer.LastRoundUserWon)
         {
             SetUserPlayerCard();
             SetComputerPlayerCard();
@@ -275,12 +278,12 @@ public class Game66
     private void SetUserPlayerCard()
     {
         PlayCardCount++;
-        for (int i = TRUMP_CARD_INDEX + PlayCardCount; i < Cards.Count; i++)
+        for (int i = sTRUMP_CARD_INDEX + PlayCardCount; i < mCards.Count; i++)
         {
-            Card candidate = Cards[i];
-            if (!UserPlayer.GetCards().Contains(candidate) && !ComputerPlayer.GetCards().Contains(candidate))
+            Card candidate = mCards[i];
+            if (!mUserPlayer.GetCards().Contains(candidate) && !mComputerPlayer.GetCards().Contains(candidate))
             {
-                UserPlayer.SetCard(candidate);
+                mUserPlayer.SetCard(candidate);
                 break;
             }
         }
@@ -289,12 +292,12 @@ public class Game66
     private void SetComputerPlayerCard()
     {
         PlayCardCount++;
-        for (int i = TRUMP_CARD_INDEX + PlayCardCount; i < Cards.Count; i++)
+        for (int i = sTRUMP_CARD_INDEX + PlayCardCount; i < mCards.Count; i++)
         {
-            Card candidate = Cards[i];
-            if (!UserPlayer.GetCards().Contains(candidate) && !ComputerPlayer.GetCards().Contains(candidate))
+            Card candidate = mCards[i];
+            if (!mUserPlayer.GetCards().Contains(candidate) && !mComputerPlayer.GetCards().Contains(candidate))
             {
-                ComputerPlayer.SetCard(candidate);
+                mComputerPlayer.SetCard(candidate);
                 break;
             }
         }
@@ -302,34 +305,33 @@ public class Game66
 
     public Card? GetUserPlayerCurrentCard()
     {
-        return UserPlayer.CurrentCard;
+        return mUserPlayer.CurrentCard;
     }
 
     public Card? GetComputerPlayerCurrentCard()
     {
-        return ComputerPlayer.CurrentCard;
+        return mComputerPlayer.CurrentCard;
     }
 
     public int GetUserPlayerScore()
     {
-        return UserPlayer.GetScore();
+        return mUserPlayer.GetScore();
     }
 
     public int GetComputerPlayerScore()
     {
-        return ComputerPlayer.GetScore();
+        return mComputerPlayer.GetScore();
     }
 
     public void SetComputerPlayerSelectedCard()
     {
         Card? selectedCard = null;
 
-        if (UserPlayer.TrumpCard != null)
+        if (TrumpCard != null)
         {
-            Suit trumpSymbol = UserPlayer.TrumpCard.CardName;
-            foreach (Card card in ComputerPlayer.GetCards())
+            foreach (Card card in mComputerPlayer.GetCards())
             {
-                if (card.CardName == trumpSymbol && card.CardValue == Rank.Aso)
+                if (card.CardName == TrumpCard.CardName && card.CardValue == Rank.Aso)
                 {
                     selectedCard = card;
                     break;
@@ -339,39 +341,43 @@ public class Game66
 
         if (selectedCard == null)
         {
-            Card? fortyCard = ComputerPlayer.PlayForty();
+            Card? fortyCard = mComputerPlayer.PlayForty(TrumpCard);
             if (fortyCard != null)
             {
                 selectedCard = fortyCard;
-                ComputerPlayer.CreateCatchPoupDamaForForty(fortyCard);
+                mComputerPlayer.CreateCatchPoupDamaForForty(fortyCard);
             }
             else
             {
-                    Card? twentyCard = ComputerPlayer.PlayTwenty();
-                    if (twentyCard != null)
-                    {
-                        selectedCard = twentyCard;
-                        ComputerPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
-                    }
+                Card? twentyCard = mComputerPlayer.PlayTwenty(TrumpCard);
+                if (twentyCard != null)
+                {
+                    selectedCard = twentyCard;
+                    mComputerPlayer.CreateCatchPoupDamaForTwenty(twentyCard);
+                }
             }
         }
 
         if (selectedCard == null)
         {
-            selectedCard = ComputerPlayer.GetComputerPlayerSmallestCard(null);
+            selectedCard = mComputerPlayer.GetComputerPlayerSmallestCard(null);
         }
 
         if (selectedCard != null)
         {
-            ComputerPlayer.RemoveCard(selectedCard);
-            ComputerPlayer.CurrentCard = selectedCard;
+            mComputerPlayer.RemoveCard(selectedCard);
+            mComputerPlayer.CurrentCard = selectedCard;
         }
 
-        UserPlayer.CurrentCard = null;
+        mUserPlayer.CurrentCard = null;
     }
 
     public void ChangeTrumpCard()
     {
-        UserPlayer.ChangeTrumpCard(ComputerPlayer.GetScore());
+        Card? newTrump = mUserPlayer.ChangeTrumpCard(mComputerPlayer.GetScore(), TrumpCard);
+        if (newTrump != null)
+        {
+            TrumpCard = newTrump;
+        }
     }
 }
