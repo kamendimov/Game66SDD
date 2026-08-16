@@ -8,7 +8,7 @@ using System;
 /// </summary>
 public abstract class Player
 {
-    protected List<Card> Cards;
+    protected List<Card> mCards;
     private int mScore;
     private const int sTWENTY = 20;
     private const int sFORTY = 40;
@@ -20,28 +20,28 @@ public abstract class Player
 
     protected Player()
     {
-        Cards = new List<Card>();
+        mCards = new List<Card>();
         CatchPoupDamaList = new List<CatchPoupDama>();
     }
 
     public void SetCard(Card card)
     {
-        Cards.Add(card);
+        mCards.Add(card);
     }
 
     public void ClearCards()
     {
-        Cards.Clear();
+        mCards.Clear();
     }
 
     public void RemoveCard(Card card)
     {
-        Cards.Remove(card);
+        mCards.Remove(card);
     }
 
     public List<Card> GetCards()
     {
-        return new List<Card>(Cards);
+        return new List<Card>(mCards);
     }
 
     public void IncrementScore(int value)
@@ -136,19 +136,15 @@ public abstract class Player
 
     public void CreateCatchPoupDamaForTwenty(Card poupCard)
     {
-        Card? damaCard = GetCards().FirstOrDefault(c => c.CardValue == Rank.Dama && c.CardName == poupCard.CardName);
-        if (damaCard != null)
-        {
-            CatchPoupDamaList.Add(new CatchPoupDama
-            {
-                CardPoup = poupCard,
-                CardDama = damaCard,
-                IsForty = false
-            });
-        }
+        CreateCatchPoupDama(poupCard, false);
     }
 
     public void CreateCatchPoupDamaForForty(Card poupCard)
+    {
+        CreateCatchPoupDama(poupCard, true);
+    }
+
+    private void CreateCatchPoupDama(Card poupCard, bool IsForty)
     {
         Card? damaCard = GetCards().FirstOrDefault(c => c.CardValue == Rank.Dama && c.CardName == poupCard.CardName);
         if (damaCard != null)
@@ -157,7 +153,7 @@ public abstract class Player
             {
                 CardPoup = poupCard,
                 CardDama = damaCard,
-                IsForty = true
+                IsForty = IsForty
             });
         }
     }
