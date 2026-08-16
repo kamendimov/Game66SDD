@@ -1,5 +1,7 @@
 namespace Cantace;
 
+using System;
+
 /// <summary>
 /// Abstract base class for a player in the 66 game.
 /// Manages the player's hand of cards, score, and current card.
@@ -10,6 +12,9 @@ public abstract class Player
     private int Score;
 
     public Card? CurrentCard { get; set; }
+    public bool GameClosed { get; set; }
+    public bool LastRoundUserWon { get; set; }
+    public Card? TrumpCard { get; set; }
 
     protected Player()
     {
@@ -53,15 +58,67 @@ public abstract class Player
 
     public abstract void CloseTheGame();
     public abstract Card? ChangeTrumpCard(int computerPlayerScore);
-    public abstract void PlayTwenty();
-    public abstract void PlayForty();
 
-    public static string GetCardSymbol(string cardName)
+    public virtual Card? PlayTwenty()
     {
-        if (cardName.EndsWith("Spatia")) return "Spatia";
-        if (cardName.EndsWith("Pika")) return "Pika";
-        if (cardName.EndsWith("Kupa")) return "Kupa";
-        if (cardName.EndsWith("Kare")) return "Kare";
-        return string.Empty;
+        if (!LastRoundUserWon) return null;
+        
+        Suit? trumpSymbol = TrumpCard != null ? TrumpCard.CardName : null;
+        
+        foreach (Suit suit in Enum.GetValues(typeof(Suit)))
+        {
+            Card? cardWithValue4 = null;
+            Card? cardWithValue3 = null;
+            
+            foreach (Card card in GetCards())
+            {
+                if (card.CardName == suit && suit != trumpSymbol)
+                {
+                    if (card.CardValue == Rank.Poup)
+                    {
+                        cardWithValue4 = card;
+                    }
+                    else if (card.CardValue == Rank.Dama)
+                    {
+                        cardWithValue3 = card;
+                    }
+                    if (cardWithValue4 != null && cardWithValue3 != null)
+                    {
+                        return cardWithValue3;
+                    }
+                }
+            }
+        }
+        
+        return null;
     }
+
+    public virtual Card? PlayForty()
+    {
+        if (!LastRoundUserWon) return null;
+        
+        if (TrumpCard == null) return null;
+        
+        Suit trumpSymbol = TrumpCard.CardName;
+        
+        Card? cardWithValue4 = null;
+        Card? cardWithValue3 = null;
+        
+        foreach (Card card in GetCards())
+        {
+            Suit symbol = card.CardName;
+            
+            if (card.CardValue == Rank.Poup && symbol == trumpSymbol)
+            {
+                cardWithValue4 = card;
+            }
+            else if (card.CardValue == Rank.Dama && symbol == trumpSymbol)
+            {
+                cardWithValue3 = card;
+            }
+        }
+        
+        return cardWithValue3;
+    }
+
 }

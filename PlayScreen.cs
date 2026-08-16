@@ -14,7 +14,7 @@ public partial class PlayScreen : Form
     private Game66 game66;
     private int selectedCardIndex = -1;
     private Timer computerPlayTimer;
-    private const int COMPUTER_USER_SELECT_TIME = 5000;
+    private const int COMPUTER_USER_SELECT_TIME = 2000;
 
     public PlayScreen()
     {
@@ -55,7 +55,11 @@ public partial class PlayScreen : Form
 
     private void SetTwentyButton_Click(object sender, EventArgs e)
     {
-        game66.GetUserPlayer().PlayTwenty();
+        Card? twentyCard = game66.GetUserPlayer().PlayTwenty();
+        if (twentyCard != null)
+        {
+            game66.GetUserPlayer().IncrementScore(20);
+        }
         if (game66.GetUserPlayerScore() >= Game66.WIN_SCORE)
         {
             MessageBox.Show("User Player won!");
@@ -65,7 +69,11 @@ public partial class PlayScreen : Form
 
     private void SetFourtyButton_Click(object sender, EventArgs e)
     {
-        game66.GetUserPlayer().PlayForty();
+        Card? fortyCard = game66.GetUserPlayer().PlayForty();
+        if (fortyCard != null)
+        {
+            game66.GetUserPlayer().IncrementScore(40);
+        }
         if (game66.GetUserPlayerScore() >= Game66.WIN_SCORE)
         {
             MessageBox.Show("User Player won!");
