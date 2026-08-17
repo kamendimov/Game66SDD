@@ -177,6 +177,7 @@ All features requested through the `SetTwenty` / `SetForty` button command are i
 - `CloseTheGame()` method added to `Game66` to set `gameClosed = true` when `UserPlayer.Score >= 1`. When `gameClosed` is true, no new cards are dealt after playing.
 - `SetUserPlayerSelectedCard` updated to clear both players' cards when either `UserPlayer.GameClosed && UserPlayer.GetScore() >= Game66.WIN_SCORE` or `ComputerPlayer.GameClosed && ComputerPlayer.GetScore() >= Game66.WIN_SCORE`.
 - `SetPlayersCards()` is now called only when both `!UserPlayer.GameClosed` and `!ComputerPlayer.GameClosed` are true.
+- `SetCardsButton_Click` in `PlayScreen.cs` now calls `mGame66.ResetGame()` as the first line before shuffling and distributing cards.
 
 ---
 - `CloseGameButton` added to `PlayScreen` to trigger `CloseTheGame()`.
@@ -203,6 +204,7 @@ All features requested through the `SetTwenty` / `SetForty` button command are i
 - `PlayCardCount` made publicly readable in `Game66`; `PlayScreen_MouseClick` starts a 5-second `Timer` when `PlayCardCount > 0` and `LastRoundUserWon` is `false`, after which `SetComputerPlayerSelectedCard()` is called and the UI is invalidated to present the computer's card in `PlayScreen_Paint`.
 - `SetUserPlayerSelectedCard` uses `ComputerPlayer.CurrentCard` for `computerCard` when `PlayCardCount > 0` and `LastRoundUserWon` is `false`; otherwise, it runs the existing card-selection logic.
 - `PlayScreen` declares `private const int COMPUTER_USER_SELECT_TIME = 2000` and uses it for the `computerPlayTimer.Interval`.
+- `SetCardsButton_Click` now calls `mGame66.ResetGame()` as its first line, followed by `mGame66.MixCards()`, `mGame66.DistributeCards()`, resets `mSelectedCardIndex` to `-1`, and calls `Invalidate()`.
 - `SetPlayersCards()` extracted from `SetUserPlayerSelectedCard` in `Game66`; it contains the card-dealing logic (incrementing `PlayCardCount` and setting cards for both players), and is called when `!UserPlayer.GameClosed`. If `LastRoundUserWon` is `true`, `UserPlayer` receives the first card; otherwise, `ComputerPlayer` receives the first card.
 - `SetUserPlayerCard()` and `SetComputerPlayerCard()` extracted as private methods from `SetPlayersCards()` in `Game66`; each handles incrementing `PlayCardCount` and dealing one card to the corresponding player.
 - `GetComputerPlayerCardToPlayByCardType`, `GetComputerPlayerCardToPlayByTrumpCard`, and `GetComputerPlayerSmallestCard` moved from `Game66` to `ComputerPlayer` as public methods.

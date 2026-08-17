@@ -47,6 +47,7 @@ public partial class PlayScreen : Form
 
     private void SetCardsButton_Click(object sender, EventArgs e)
     {
+        mGame66.ResetGame();
         mGame66.MixCards();
         mGame66.DistributeCards();
         mSelectedCardIndex = -1;
