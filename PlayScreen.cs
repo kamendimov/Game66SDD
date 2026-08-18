@@ -22,6 +22,7 @@ public partial class PlayScreen : Form
     public PlayScreen()
     {
         InitializeComponent();
+        Height = System.Windows.Forms.Screen.GetWorkingArea(new Point(0, 0)).Height;
         mGame66 = new Game66();
         mSelectedCardIndex = -1;
         mBrush = new SolidBrush(Color.Black);
@@ -110,6 +111,7 @@ public partial class PlayScreen : Form
         DrawTrumpCard(g);
         DrawPlayScene(g);
         DrawCatchedPoupDama(g);
+        DrawPlayedCards(g);
     }
 
     private void DrawPlayScene(Graphics g)
@@ -126,8 +128,8 @@ public partial class PlayScreen : Form
         float totalWidth = userScoreSize.Width + 20 + computerScoreSize.Width;
         float startX = (ClientSize.Width - totalWidth) / 2;
 
-        g.DrawString(userScoreText, mFont, mBrush, startX, 10);
-        g.DrawString(computerScoreText, mFont, mBrush, startX + userScoreSize.Width + 20, 10);
+        g.DrawString(computerScoreText, mFont, mBrush, startX, 10);
+        g.DrawString(userScoreText, mFont, mBrush, startX + computerScoreSize.Width + 20, 10);
 
         Card? userCard = mGame66.GetUserPlayerCurrentCard();
         Card? computerCard = mGame66.GetComputerPlayerCurrentCard();
@@ -160,10 +162,10 @@ public partial class PlayScreen : Form
     {
         int catchCardWidth = 50;
         int catchCardHeight = 70;
-        int catchCardSpacing = 55;
-        int catchY = ClientSize.Height - 160 - catchCardHeight - 10;
+        int catchCardSpacing = 10;
+        int catchY = ClientSize.Height - 330 - catchCardHeight - 10;
 
-        int catchX = 10;
+        int catchX = 70;
         foreach (CatchPoupDama catchItem in mGame66.GetComputerPlayer().CatchPoupDamaList)
         {
             if (catchItem.CardPoup != null)
@@ -172,10 +174,10 @@ public partial class PlayScreen : Form
                 if (File.Exists(imagePath))
                 {
                     Image cardImage = Image.FromFile(imagePath);
-                    g.DrawImage(cardImage, catchX, catchY, catchCardWidth, catchCardHeight);
+                    g.DrawImage(cardImage, catchX - catchCardWidth - catchCardSpacing, catchY, catchCardWidth, catchCardHeight);
                 }
             }
-            catchX += catchCardSpacing;
+
             if (catchItem.CardDama != null)
             {
                 string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, catchItem.CardDama.ImagePath);
@@ -185,10 +187,12 @@ public partial class PlayScreen : Form
                     g.DrawImage(cardImage, catchX, catchY, catchCardWidth, catchCardHeight);
                 }
             }
-            catchX += catchCardSpacing;
-        }
 
+            catchY += catchCardHeight + catchCardSpacing;
+        }
+        
         catchX = ClientSize.Width - 10 - catchCardWidth;
+        catchY = ClientSize.Height - 330 - catchCardHeight - 10;
         foreach (CatchPoupDama catchItem in mGame66.GetUserPlayer().CatchPoupDamaList)
         {
             if (catchItem.CardPoup != null)
@@ -197,10 +201,10 @@ public partial class PlayScreen : Form
                 if (File.Exists(imagePath))
                 {
                     Image cardImage = Image.FromFile(imagePath);
-                    g.DrawImage(cardImage, catchX, catchY, catchCardWidth, catchCardHeight);
+                    g.DrawImage(cardImage, catchX - catchCardWidth - catchCardSpacing, catchY, catchCardWidth, catchCardHeight);
                 }
             }
-            catchX -= catchCardSpacing;
+
             if (catchItem.CardDama != null)
             {
                 string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, catchItem.CardDama.ImagePath);
@@ -210,7 +214,8 @@ public partial class PlayScreen : Form
                     g.DrawImage(cardImage, catchX, catchY, catchCardWidth, catchCardHeight);
                 }
             }
-            catchX -= catchCardSpacing;
+
+            catchY += catchCardHeight + catchCardSpacing;
         }
     }
 
@@ -225,6 +230,52 @@ public partial class PlayScreen : Form
                 Image trumpImage = Image.FromFile(trumpImagePath);
                 g.DrawImage(trumpImage, ClientSize.Width - 120, 10, 100, 140);
             }
+        }
+    }
+
+    private void DrawPlayedCards(Graphics g)
+    {
+        int cardWidth = 50;
+        int cardHeight = 70;
+        int leftX = 140;
+        int rightX = ClientSize.Width - 240;
+        int y = 10;
+
+        foreach (PlayedCardsPair pair in mGame66.mPlayedCards)
+        {
+            if (pair.ComputerPlayerCard != null)
+            {
+                string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, pair.ComputerPlayerCard.ImagePath);
+                if (File.Exists(imagePath))
+                {
+                    Image cardImage = Image.FromFile(imagePath);
+                    g.DrawImage(cardImage, leftX, y, cardWidth, cardHeight);
+                }
+
+                if (pair.ComputerPlayerResult != null)
+                {
+                    string resultText = $"+{pair.ComputerPlayerResult}";
+                    g.DrawString(resultText, mFont, mBrush, leftX + cardWidth + 5, y + 5);
+                }
+            }
+
+            if (pair.UserPlayerCard != null)
+            {
+                string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, pair.UserPlayerCard.ImagePath);
+                if (File.Exists(imagePath))
+                {
+                    Image cardImage = Image.FromFile(imagePath);
+                    g.DrawImage(cardImage, rightX, y, cardWidth, cardHeight);
+                }
+
+                if (pair.UserPlayerResult != null)
+                {
+                    string resultText = $"+{pair.UserPlayerResult}";
+                    g.DrawString(resultText, mFont, mBrush, rightX + cardWidth + 5, y + 5);
+                }
+            }
+
+            y += cardHeight + 10;
         }
     }
 

@@ -14,7 +14,7 @@ Build a two-player card game (human vs. computer) where a human player competes 
 - **Language:** C# (.NET 9.0)
 - **UI Framework:** Windows Forms (WinForms)
 - **Platform:** Windows
-- **Form Size:** 1200 × 800 px
+- **Form Size:** 1200 px width × desktop screen height (set at runtime)
 - **Form Border:** FixedSingle (maximize disabled)
 - **Font:** Arial 11 pt
 - **Card Rendering:** Custom painting using PNG images
@@ -25,7 +25,7 @@ Build a two-player card game (human vs. computer) where a human player competes 
 ## 4. Functional Requirements
 
 ### 4.1 Form & Layout
-- **REQ-UI-01:** Main form size is exactly `1200 × 800`.
+- **REQ-UI-01:** Main form width is exactly `1200`; height is set to the primary desktop screen height at runtime.
 - **REQ-UI-02:** Form border style is `FixedSingle`; maximize box is disabled.
 - **REQ-UI-03:** Default font is Arial 11 pt.
 - **REQ-UI-04:** User cards are displayed along the bottom of the screen.
@@ -95,7 +95,7 @@ Build a two-player card game (human vs. computer) where a human player competes 
 
 | ID | Criterion | Status |
 |----|-----------|--------|
-| AC-01 | Form builds and runs at 1200×800 with FixedSingle border and Arial 11pt. | ✅ Met |
+| AC-01 | Form builds and runs with width 1200 and height equal to the primary desktop screen height, with FixedSingle border and Arial 11pt. | ✅ Met |
 | AC-02 | `ResetGameButton` clears all game state (hands, scores, trump, current cards). | ✅ Met |
 | AC-03 | `SetCardsButton` shuffles deck and deals 6 cards to each player plus a trump card. | ✅ Met |
 | AC-04 | Double-click on a user card replaces it from undeck starting at index 13 (trump excluded). | ✅ Met |
@@ -127,7 +127,8 @@ Cantace/
 │   ├── Player.cs
 │   ├── ComputerPlayer.cs
 │   ├── UserPlayer.cs
-│   └── Card.cs
+│   ├── Card.cs
+│   └── PlayedCardsPair.cs
 ├── Images/
 │   └── (24 PNG card images)
 ├── Cantace.csproj
@@ -141,21 +142,25 @@ Cantace/
 - **ComputerPlayer** — AI strategy implementation; overrides `CloseTheGame()` and `ChangeTrumpCard(int, Card?)` with empty/no-op bodies. Inherits `PlayTwenty(Card?)` and `PlayForty(Card?)` from `Player`.
 - **UserPlayer** — Human player logic; holds `LastRoundUserWon`, `GameClosed`, and overrides `CloseTheGame()`, `ChangeTrumpCard(int, Card?)`, `PlayTwenty(Card?)`, and `PlayForty(Card?)` with concrete implementations.
 - **Card** — Data model (`CardName` as `Suit`, `CardValue` as `Rank`, `Index`, `ImagePath`).
+- **PlayedCardsPair** — Data model representing a pair of cards played in a single round; contains nullable `UserPlayerCard` and `ComputerPlayerCard` properties of type `Card?`, and nullable `UserPlayerResult` and `ComputerPlayerResult` properties of type `int?` indicating the round outcome for each player.
 
 ---
 
 ## 7. Implementation Notes
 - `EnableDefaultCompileItems` is toggled to `false` in the `.csproj` to explicitly include `Objects/**/*.cs`.
+- `PlayScreen` form height is set to `System.Windows.Forms.Screen.GetWorkingArea(new Point(0, 0)).Height` in the constructor after `InitializeComponent()`, ensuring the bottom of the form is fully visible above the Windows taskbar.
 - Images are included as `Content` with `CopyToOutputDirectory`.
 - `PlayCardCount` tracks played cards to calculate the next undealt index as `13 + PlayCardCount`.
 - `CurrentCard` tracks the card played in the current round for both players.
-- `ResetGame()` clears hands, scores, `CurrentCard`, `TrumpCard`, and both players' `CatchPoupDamaList`.
+- `ResetGame()` clears hands, scores, `CurrentCard`, `TrumpCard`, both players' `CatchPoupDamaList`, and `mPlayedCards`.
+- `LoadCards()` private method added to `Game66` to populate `mCards` with the 24-card deck; extracted from the constructor.
 - `WIN_SCORE` is a public constant in `Game66` set to `66`, replacing the magic number in score comparisons.
 - `UserPlayer.LastRoundUserWon` tracks whether the user won the most recent round; it is synchronized from `Game66` and reset in `ResetGame()` and `DistributeCards()`.
 - `TrumpCard` is stored in `Game66` and set during `DistributeCards()` and `ChangeTrumpCard()`.
 - `UserPlayer.ChangeTrumpCard(int computerPlayerScore, Card? trumpCard)` performs the trump swap logic and returns the new trump card; `Game66.ChangeTrumpCard()` delegates to it and updates `Game66.TrumpCard`. Returns `null` when `GameClosed` is `true`.
 - `PlayTwenty()` and `PlayForty()` are implemented on `UserPlayer`; they award 20 and 40 points respectively when `LastRoundUserWon` is true and the user holds the required card combination.
 - `Player` declares `CloseTheGame()`, `ChangeTrumpCard(int, Card?)`, `PlayTwenty(Card?)`, and `PlayForty(Card?)` as abstract methods; `UserPlayer` provides concrete implementations, while `ComputerPlayer` provides empty/no-op overrides.
+- In `SetUserPlayerSelectedCard`, the user's selected card and the computer's card are determined and removed from their respective player hands, and the round score is awarded based on trump and card value comparison.
 - In `SetUserPlayerSelectedCard`, if the user's selected card is of the trump suit and the computer's card is not, the full round score is awarded to `UserPlayer` without comparing card values.
 - In `SetUserPlayerSelectedCard`, if the computer's card is of the trump suit and the user's selected card is not, the full round score is awarded to `ComputerPlayer` without comparing card values.
 - `Game66.GetUserPlayer()` exposes the `UserPlayer` instance so the UI can call `PlayTwenty()` and `PlayForty()`.
@@ -178,6 +183,10 @@ All features requested through the `SetTwenty` / `SetForty` button command are i
 - `SetUserPlayerSelectedCard` updated to clear both players' cards when either `UserPlayer.GameClosed && UserPlayer.GetScore() >= Game66.WIN_SCORE` or `ComputerPlayer.GameClosed && ComputerPlayer.GetScore() >= Game66.WIN_SCORE`.
 - `SetPlayersCards()` is now called only when both `!UserPlayer.GameClosed` and `!ComputerPlayer.GameClosed` are true.
 - `SetCardsButton_Click` in `PlayScreen.cs` now calls `mGame66.ResetGame()` as the first line before shuffling and distributing cards.
+- `PlayedCardsPair` class added to `Objects\PlayedCardsPair.cs` with nullable properties `UserPlayerCard` and `ComputerPlayerCard` of type `Card?`, and nullable properties `UserPlayerResult` and `ComputerPlayerResult` of type `int?` to represent the round outcome for each player.
+- `mPlayedCards` added to `Game66` as a public `List<PlayedCardsPair>` property to track pairs of cards played during the game.
+- `ResetGame()` clears `mPlayedCards` in addition to hands, scores, `CurrentCard`, `TrumpCard`, and both players' `CatchPoupDamaList`.
+- `DrawPlayedCards(Graphics g)` added to `PlayScreen`; draws `ComputerPlayerCard` images on the left side at `x = 140` with `UserPlayerResult` and `ComputerPlayerResult` text prefixed with "+" to the right of each card, and `UserPlayerCard` images on the right side at `x = ClientSize.Width - 240` from `mGame66.mPlayedCards`, stacked vertically at 50% size (50×70).
 
 ---
 - `CloseGameButton` added to `PlayScreen` to trigger `CloseTheGame()`.
@@ -194,13 +203,14 @@ All features requested through the `SetTwenty` / `SetForty` button command are i
 - `ChangeTrumpCard(int, Card?)` declared as abstract in `Player`; `UserPlayer` provides concrete logic, `ComputerPlayer` provides empty/no-op override. `PlayTwenty(Card?)` and `PlayForty(Card?)` are `virtual` in `Player`; `ComputerPlayer` inherits them without override.
 - `PlayTwenty()` and `PlayForty()` implementations moved from `UserPlayer` to `Player` as `virtual` methods returning `Card?`; they return the `Poup` card when the required card combination is found, `null` otherwise. They also increment the player's score by `TWENTY` (20) or `FORTY` (40) directly when the condition is met. `PlayForty()` now returns early inside the loop as soon as both trump `Poup` and `Dama` cards are found. `PlayScreen` button handlers simply invoke these methods.
 - `CatchPoupDama` class added to `Objects\CatchPoupDama.cs` with properties `CardPoup`, `CardDama`, and `IsForty`. `Player` now contains a `List<CatchPoupDama> CatchPoupDamaList` initialized in the constructor, a private `CreateCatchPoupDama(Card, bool)` method that finds the matching `Dama` card by suit and adds a new `CatchPoupDama`, and two public factory methods: `CreateCatchPoupDamaForTwenty(Card)` and `CreateCatchPoupDamaForForty(Card)` that delegate to the private method with `IsForty = false` or `IsForty = true` respectively. Whenever `PlayTwenty()` or `PlayForty()` returns a non-null `Card` in `SetUserPlayerSelectedCard` or `SetComputerPlayerSelectedCard`, the corresponding factory method is called with the returned `Poup` card.
-- `PlayScreen_Paint` CatchPoupDama drawing logic extracted to `private void DrawCatchedPoupDama(Graphics g)`; draws ComputerPlayer catch cards on the left bottom and UserPlayer catch cards on the right bottom at 50% size (50×70).
+- `PlayScreen_Paint` CatchPoupDama drawing logic extracted to `private void DrawCatchedPoupDama(Graphics g)`; draws each `CatchPoupDama` from `ComputerPlayer.CatchPoupDamaList` on the left side starting at `x = 70`, and from `UserPlayer.CatchPoupDamaList` on the right side starting at `x = ClientSize.Width - 60`, with `CardPoup` to the left of `CardDama` horizontally in each pair, and each pair stacked vertically below the previous one starting at `y = ClientSize.Height - 330 - catchCardHeight - 10` at 50% size (50×70).
 - `PlayScreen_Paint` trump card drawing logic extracted to `private void DrawTrumpCard(Graphics g)`; draws the trump card image at the top right corner.
+- `PlayScreen_Paint` played cards drawing logic extracted to `private void DrawPlayedCards(Graphics g)`; iterates over `mGame66.mPlayedCards` and draws each `ComputerPlayerCard` on the left side at `x = 140` (right of the buttons) with `UserPlayerResult` and `ComputerPlayerResult` text prefixed with "+" to the right of each card, and each `UserPlayerCard` on the right side at `x = ClientSize.Width - 240` (left of the TrumpCard), stacked vertically from `y = 10` at 50% size (50×70).
 - `PlayScreen_Paint` user player card drawing logic extracted to `private void DrawUserPlayerCards(Graphics g)`; draws the user's hand at the bottom of the screen with yellow highlight for the selected card.
-- `PlayScreen_Paint` play scene drawing logic extracted to `private void DrawPlayScene(Graphics g)`; draws score text at the top center and the current user/computer cards in the middle of the screen.
+- `PlayScreen_Paint` play scene drawing logic extracted to `private void DrawPlayScene(Graphics g)`; draws "Computer" score text on the top left and "You" score text on the top right, with the current user/computer cards in the middle of the screen.
 - `GetCardSymbol()` removed from `Player`; all callers now use direct `Suit` property access (`card.CardName`, `TrumpCard.CardName`).
 - `PlaySelectedCard` renamed to `SetUserPlayerSelectedCard` in `Objects\Game66.cs` and `PlayScreen.cs` for clarity.
-- `SetComputerPlayerSelectedCard` added to `Game66` to select the computer's card: prefers a trump-suit card with value 11, otherwise calls `ComputerPlayer.PlayForty()` and uses the returned card if non-null, otherwise calls `ComputerPlayer.PlayTwenty()` and uses the returned card if non-null; if neither returns a card, selects the smallest-value card. The selected card is removed from `ComputerPlayer` and set as `CurrentCard` in a single final block; clears `UserPlayer.CurrentCard`.
+- `SetComputerPlayerSelectedCard` added to `Game66` to select the computer's card: prefers a trump-suit card with value 11, otherwise calls `ComputerPlayer.PlayForty()` and uses the returned card if non-null, otherwise calls `ComputerPlayer.PlayTwenty()` and uses the returned card if non-null; if neither returns a card, selects the smallest-value card. The selected card is removed from `ComputerPlayer` and from `mCards`, and set as `CurrentCard` in a single final block; clears `UserPlayer.CurrentCard`.
 - `PlayCardCount` made publicly readable in `Game66`; `PlayScreen_MouseClick` starts a 5-second `Timer` when `PlayCardCount > 0` and `LastRoundUserWon` is `false`, after which `SetComputerPlayerSelectedCard()` is called and the UI is invalidated to present the computer's card in `PlayScreen_Paint`.
 - `SetUserPlayerSelectedCard` uses `ComputerPlayer.CurrentCard` for `computerCard` when `PlayCardCount > 0` and `LastRoundUserWon` is `false`; otherwise, it runs the existing card-selection logic.
 - `PlayScreen` declares `private const int COMPUTER_USER_SELECT_TIME = 2000` and uses it for the `computerPlayTimer.Interval`.
@@ -215,6 +225,8 @@ All features requested through the `SetTwenty` / `SetForty` button command are i
 - `CardValue` property type changed from `int` to `Rank` in `Objects\Card.cs`; all deck initialization values and comparisons updated to use the `Rank` enum.
 - Rank name prefixes removed from `CardName` values in `Game66` deck initialization; cards are now identified by `Suit` enum value (e.g., `Suit.Pika`, `Suit.Kupa`, `Suit.Kare`, `Suit.Spatia`), with rank stored in `CardValue`.
 - `Suit` enum added to `Objects\Suit.cs` with values `Pika`, `Kupa`, `Kare`, `Spatia`, corresponding to the card names used in the deck.
+- `PlayedCardsPair` class added to `Objects\PlayedCardsPair.cs` with nullable properties `UserPlayerCard` and `ComputerPlayerCard` of type `Card?`, and nullable properties `UserPlayerResult` and `ComputerPlayerResult` of type `int?` to represent the round outcome for each player; represents a pair of cards played in a single round.
+- `mPlayedCards` added to `Game66` as a public `List<PlayedCardsPair>` property; tracks pairs of cards played during the game.
 
 ---
 
