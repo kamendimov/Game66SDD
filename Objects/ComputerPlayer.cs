@@ -8,8 +8,9 @@ using System.Linq;
 /// </summary>
 public class ComputerPlayer : Player
 {
-    public override void CloseTheGame()
+    public override bool CloseTheGame()
     {
+        return false;
     }
 
     public override Card? ChangeTrumpCard(int computerPlayerScore, Card? trumpCard)

@@ -41,14 +41,16 @@ public partial class PlayScreen : Form
 
     private void ResetGameButton_Click(object sender, EventArgs e)
     {
-        mGame66.ResetGame();
+        //mGame66.ResetGame();
+        mGame66 = new Game66();
         mSelectedCardIndex = -1;
         Invalidate();
     }
 
     private void SetCardsButton_Click(object sender, EventArgs e)
     {
-        mGame66.ResetGame();
+        //mGame66.ResetGame();
+        mGame66 = new Game66();
         mGame66.MixCards();
         mGame66.DistributeCards();
         mSelectedCardIndex = -1;
@@ -57,13 +59,19 @@ public partial class PlayScreen : Form
 
     private void ChangeTrumpCardButton_Click(object sender, EventArgs e)
     {
-        mGame66.ChangeTrumpCard();
+        if (mGame66.ChangeTrumpCard())
+        {
+            ChangeTrumpCardButton.Enabled = false;
+        }
         Invalidate();
     }
 
     private void CloseGameButton_Click(object sender, EventArgs e)
     {
-        mGame66.GetUserPlayer().CloseTheGame();
+        if (mGame66.CloseTheGame())
+        {
+            CloseGameButton.Enabled = false;
+        }
         Invalidate();
     }
 
@@ -87,11 +95,11 @@ public partial class PlayScreen : Form
                 mSelectedCardIndex = i;
                 Invalidate();
 
-                if (mGame66.GetComputerPlayerScore() >= Game66.WIN_SCORE)
+                if (mGame66.GetComputerPlayerScore() >= Game66.WinScore)
                 {
                     MessageBox.Show("Computer Player won!");
                 }
-                else if (mGame66.GetUserPlayerScore() >= Game66.WIN_SCORE)
+                else if (mGame66.GetUserPlayerScore() >= Game66.WinScore)
                 {
                     MessageBox.Show("User player won!");
                 }

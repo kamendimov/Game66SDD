@@ -6,12 +6,14 @@ namespace Cantace;
 /// </summary>
 public class UserPlayer : Player
 {
-    public override void CloseTheGame()
+    public override bool CloseTheGame()
     {
         if (GetScore() >= 1)
         {
             GameClosed = true;
+            return true;
         }
+        return false;
     }
 
     public override Card? ChangeTrumpCard(int computerPlayerScore, Card? trumpCard)

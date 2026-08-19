@@ -59,7 +59,7 @@ public abstract class Player
         mScore = 0;
     }
 
-    public abstract void CloseTheGame();
+    public abstract bool CloseTheGame();
     public abstract Card? ChangeTrumpCard(int computerPlayerScore, Card? trumpCard);
 
     public virtual Card? PlayTwenty(Card? trumpCard)

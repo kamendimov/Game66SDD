@@ -34,12 +34,12 @@ Build a two-player card game (human vs. computer) where a human player competes 
 - **REQ-UI-07:** Scores are displayed at the top center.
 
 ### 4.2 Buttons & Controls
-- **REQ-BTN-01:** `ResetGameButton` — resets the entire game state.
+- **REQ-BTN-01:** `ResetGameButton` — creates a new `Game66()` instance to reset the entire game state.
 - **REQ-BTN-02:** `SetCardsButton` — shuffles the deck and distributes cards.
-- **REQ-BTN-03:** `ChangeTrumpCardButton` — calls `Game66.ChangeTrumpCard()` to perform trump change when conditions are met.
-- **REQ-BTN-04:** `SetTwentyButton` — calls `PlayTwenty()` and, if `UserPlayer.Score >= Game66.WIN_SCORE`, shows `"User Player won!"`.
-- **REQ-BTN-05:** `SetFortyButton` — calls `PlayForty()` and, if `UserPlayer.Score >= Game66.WIN_SCORE`, shows `"User Player won!"`.
-- **REQ-BTN-06:** `CloseGameButton` — calls `CloseTheGame()` to stop card dealing and clear hands.
+- **REQ-BTN-03:** `ChangeTrumpCardButton` — calls `Game66.ChangeTrumpCard()` to perform trump change when conditions are met; the button is disabled after a successful trump change.
+- **REQ-BTN-04:** `SetTwentyButton` — calls `PlayTwenty()` and, if `UserPlayer.Score >= Game66.WinScore`, shows `"User Player won!"`.
+- **REQ-BTN-05:** `SetFortyButton` — calls `PlayForty()` and, if `UserPlayer.Score >= Game66.WinScore`, shows `"User Player won!"`.
+- **REQ-BTN-06:** `CloseGameButton` — calls `Game66.CloseTheGame()` to stop card dealing and clear hands; the button is disabled after a successful close.
 
 ### 4.3 Card Management
 - **REQ-CARD-01:** The game uses a 24-card deck with indices 1–24.
@@ -62,9 +62,9 @@ Build a two-player card game (human vs. computer) where a human player competes 
   1. Matching suit with highest value if it can beat the user.
   2. Otherwise, matching suit with minimal greater value (if any).
   3. Otherwise, the smallest card in hand.
-- **REQ-PLAY-04:** When a player reaches score >= `Game66.WIN_SCORE` after playing a card, a message box shows the winner:
-  - If `ComputerPlayer.Score >= Game66.WIN_SCORE` → `"Computer Player won!"`
-  - Else if `UserPlayer.Score >= Game66.WIN_SCORE` → `"User player won!"`
+- **REQ-PLAY-04:** When a player reaches score >= `Game66.WinScore` after playing a card, a message box shows the winner:
+  - If `ComputerPlayer.Score >= Game66.WinScore` → `"Computer Player won!"`
+  - Else if `UserPlayer.Score >= Game66.WinScore` → `"User player won!"`
 
 ### 4.6 Scoring & Sets
 - **REQ-SCORE-01:** Total scores are tracked for both players.
@@ -85,9 +85,9 @@ Build a two-player card game (human vs. computer) where a human player competes 
   4. Both cards are of the trump suit
 
 ### 4.7 Game End
-- **REQ-GAME-01:** `CloseTheGame()` sets `gameClosed = true` when `UserPlayer.Score >= 1`.
+- **REQ-GAME-01:** `Game66.CloseTheGame()` delegates to `UserPlayer.CloseTheGame()`; returns `true` and sets `gameClosed = true` and `TrumpCard = null` when `UserPlayer.Score >= 1`; returns `false` otherwise.
 - **REQ-GAME-02:** When `gameClosed` is `true`, neither player receives new cards after playing.
-- **REQ-GAME-03:** In `SetUserPlayerSelectedCard`, if `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`, both players' cards are cleared.
+- **REQ-GAME-03:** In `SetUserPlayerSelectedCard`, if `gameClosed` is `true` and `UserPlayer.Score >= Game66.WinScore`, both players' cards are cleared.
 
 ---
 
@@ -96,22 +96,22 @@ Build a two-player card game (human vs. computer) where a human player competes 
 | ID | Criterion | Status |
 |----|-----------|--------|
 | AC-01 | Form builds and runs with width 1200 and height equal to the primary desktop screen height, with FixedSingle border and Arial 11pt. | ✅ Met |
-| AC-02 | `ResetGameButton` clears all game state (hands, scores, trump, current cards). | ✅ Met |
+| AC-02 | `ResetGameButton` creates a new `Game66()` instance to clear all game state (hands, scores, trump, current cards). | ✅ Met |
 | AC-03 | `SetCardsButton` shuffles deck and deals 6 cards to each player plus a trump card. | ✅ Met |
 | AC-04 | Double-click on a user card replaces it from undeck starting at index 13 (trump excluded). | ✅ Met |
 | AC-05 | Trump card is displayed top-right and can be changed only under win + zero-value conditions. | ✅ Met |
 | AC-06 | Computer plays matching suit, highest value if winning; minimal greater value if not; otherwise smallest card. | ✅ Met |
 | AC-07 | Scores update after each round; total scores displayed top-center. | ✅ Met |
-| AC-08 | `SetTwentyButton` calls `PlayTwenty()` and shows `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`. | ✅ Met |
+| AC-08 | `SetTwentyButton` calls `PlayTwenty()` and shows `"User Player won!"` when `UserPlayer.Score >= Game66.WinScore`. | ✅ Met |
 | AC-09 | 24 PNG card images are present and rendered via custom painting. | ✅ Met |
 | AC-10 | Selected card is highlighted with a yellow border. | ✅ Met |
-| AC-11 | `CloseTheGame()` sets `gameClosed = true` when `UserPlayer.Score >= 1`; no new cards are dealt after that. | ✅ Met |
-| AC-12 | In `SetUserPlayerSelectedCard`, when `gameClosed` is `true` and `UserPlayer.Score >= Game66.WIN_SCORE`, both players' cards are cleared. | ✅ Met |
-| AC-13 | When a player reaches score >= `Game66.WIN_SCORE` after playing a card, a message box shows the winner. | ✅ Met |
+| AC-11 | `Game66.CloseTheGame()` returns `true`, sets `gameClosed = true`, and sets `TrumpCard = null` when `UserPlayer.Score >= 1`; no new cards are dealt after that. | ✅ Met |
+| AC-12 | In `SetUserPlayerSelectedCard`, when `gameClosed` is `true` and `UserPlayer.Score >= Game66.WinScore`, both players' cards are cleared. | ✅ Met |
+| AC-13 | When a player reaches score >= `Game66.WinScore` after playing a card, a message box shows the winner. | ✅ Met |
 | AC-14 | In `SetUserPlayerSelectedCard`, if `computerCard` is of the trump suit and `selectedCard` is not, `ComputerPlayer` receives the full round score without value comparison. | ✅ Met |
 | AC-15 | `UserPlayer.PlayTwenty()` adds 20 points when the user won the last round and holds a non-trump value-4 and value-3 card of the same suit. | ✅ Met |
 | AC-16 | `UserPlayer.PlayForty()` adds 40 points when the user won the last round and holds a trump value-4 and value-3 card of the same suit. | ✅ Met |
-| AC-17 | `SetFortyButton` calls `PlayForty()` and shows `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`. | ✅ Met |
+| AC-17 | `SetFortyButton` calls `PlayForty()` and shows `"User Player won!"` when `UserPlayer.Score >= Game66.WinScore`. | ✅ Met |
 
 ---
 
@@ -137,10 +137,10 @@ Cantace/
 
 ### 6.2 Component Responsibilities
 - **PlayScreen** — Main form; handles painting, mouse clicks, button events, score rendering, and card display.
-- **Game66** — Core game engine; deck management, distribution, replacement, play logic, scoring, trump changes, and holds `TrumpCard` as the current trump card.
-- **Player (abstract)** — Base class with `mCards`, `CurrentCard`, `IncrementScore`, `ResetScore`, abstract methods `CloseTheGame()`, `ChangeTrumpCard(int, Card?)`, `PlayTwenty(Card?)`, `PlayForty(Card?)`, and properties `LastRoundUserWon`, `GameClosed`.
-- **ComputerPlayer** — AI strategy implementation; overrides `CloseTheGame()` and `ChangeTrumpCard(int, Card?)` with empty/no-op bodies. Inherits `PlayTwenty(Card?)` and `PlayForty(Card?)` from `Player`.
-- **UserPlayer** — Human player logic; holds `LastRoundUserWon`, `GameClosed`, and overrides `CloseTheGame()`, `ChangeTrumpCard(int, Card?)`, `PlayTwenty(Card?)`, and `PlayForty(Card?)` with concrete implementations.
+- **Game66** — Core game engine; deck management, distribution, replacement, play logic, scoring, trump changes, and holds `TrumpCard` as the current trump card. Exposes `CloseTheGame()` which delegates to `UserPlayer.CloseTheGame()` and clears `TrumpCard` on success.
+- **Player (abstract)** — Base class with `mCards`, `CurrentCard`, `IncrementScore`, `ResetScore`, abstract method `CloseTheGame()` returning `bool`, abstract method `ChangeTrumpCard(int, Card?)`, virtual methods `PlayTwenty(Card?)` and `PlayForty(Card?)`, and properties `LastRoundUserWon`, `GameClosed`.
+- **ComputerPlayer** — AI strategy implementation; overrides `CloseTheGame()` returning `false` and `ChangeTrumpCard(int, Card?)` with empty/no-op bodies. Inherits `PlayTwenty(Card?)` and `PlayForty(Card?)` from `Player`.
+- **UserPlayer** — Human player logic; holds `LastRoundUserWon`, `GameClosed`, and overrides `CloseTheGame()` returning `bool`, `ChangeTrumpCard(int, Card?)`, `PlayTwenty(Card?)`, and `PlayForty(Card?)` with concrete implementations.
 - **Card** — Data model (`CardName` as `Suit`, `CardValue` as `Rank`, `Index`, `ImagePath`).
 - **PlayedCardsPair** — Data model representing a pair of cards played in a single round; contains nullable `UserPlayerCard` and `ComputerPlayerCard` properties of type `Card?`, and nullable `UserPlayerResult` and `ComputerPlayerResult` properties of type `int?` indicating the round outcome for each player.
 
@@ -152,26 +152,28 @@ Cantace/
 - Images are included as `Content` with `CopyToOutputDirectory`.
 - `PlayCardCount` tracks played cards to calculate the next undealt index as `13 + PlayCardCount`.
 - `CurrentCard` tracks the card played in the current round for both players.
-- `ResetGame()` clears hands, scores, `CurrentCard`, `TrumpCard`, both players' `CatchPoupDamaList`, and `mPlayedCards`.
+- `ResetGame()` method is commented out in `Game66`; button handlers create a new `Game66()` instance instead to reset the game state.
 - `LoadCards()` private method added to `Game66` to populate `mCards` with the 24-card deck; extracted from the constructor.
-- `WIN_SCORE` is a public constant in `Game66` set to `66`, replacing the magic number in score comparisons.
-- `UserPlayer.LastRoundUserWon` tracks whether the user won the most recent round; it is synchronized from `Game66` and reset in `ResetGame()` and `DistributeCards()`.
+- `MixCards()` now uses a random split index between `sStartMixCardIndex` (8) and `sEndMixCardIndex` (17) instead of a fixed 12/12 split when dividing the deck before recombining. The deck size is defined by the private constant `sNumberOfCards = 24`.
+- `WinScore` is a public constant in `Game66` set to `66`, replacing the magic number in score comparisons.
+- `UserPlayer.LastRoundUserWon` tracks whether the user won the most recent round; it is synchronized from `Game66` and reset in `DistributeCards()`.
 - `TrumpCard` is stored in `Game66` and set during `DistributeCards()` and `ChangeTrumpCard()`.
-- `UserPlayer.ChangeTrumpCard(int computerPlayerScore, Card? trumpCard)` performs the trump swap logic and returns the new trump card; `Game66.ChangeTrumpCard()` delegates to it and updates `Game66.TrumpCard`. Returns `null` when `GameClosed` is `true`.
+- `DistributeCards()` uses a local `int distributedPartOfCards` variable initialized to `0` and incremented by `sPlayerCards` after each dealing loop to track the current card offset in `mCards`.
+- `UserPlayer.ChangeTrumpCard(int computerPlayerScore, Card? trumpCard)` performs the trump swap logic and returns the new trump card; `Game66.ChangeTrumpCard()` delegates to it, updates `Game66.TrumpCard`, and returns `true` on success or `false` when `GameClosed` is `true` or no swap is performed.
 - `PlayTwenty()` and `PlayForty()` are implemented on `UserPlayer`; they award 20 and 40 points respectively when `LastRoundUserWon` is true and the user holds the required card combination.
-- `Player` declares `CloseTheGame()`, `ChangeTrumpCard(int, Card?)`, `PlayTwenty(Card?)`, and `PlayForty(Card?)` as abstract methods; `UserPlayer` provides concrete implementations, while `ComputerPlayer` provides empty/no-op overrides.
+- `Player` declares `CloseTheGame()` returning `bool`, `ChangeTrumpCard(int, Card?)`, `PlayTwenty(Card?)`, and `PlayForty(Card?)` as abstract methods; `UserPlayer` provides concrete implementations, while `ComputerPlayer` provides empty/no-op overrides.
 - In `SetUserPlayerSelectedCard`, the user's selected card and the computer's card are determined and removed from their respective player hands, and the round score is awarded based on trump and card value comparison.
 - In `SetUserPlayerSelectedCard`, if the user's selected card is of the trump suit and the computer's card is not, the full round score is awarded to `UserPlayer` without comparing card values.
 - In `SetUserPlayerSelectedCard`, if the computer's card is of the trump suit and the user's selected card is not, the full round score is awarded to `ComputerPlayer` without comparing card values.
 - `Game66.GetUserPlayer()` exposes the `UserPlayer` instance so the UI can call `PlayTwenty()` and `PlayForty()`.
 - `TrumpCard` moved from `Player` to `Game66`; `PlayTwenty(Card?)` and `PlayForty(Card?)` now accept `TrumpCard` as a parameter.
-- `ChangeTrumpCard()` enforces the winning + zero-value trump card condition.
-- `CloseTheGame()` sets `gameClosed = true` when `UserPlayer.Score >= 1`. When `gameClosed` is true, no new cards are dealt after playing.
-- In `SetUserPlayerSelectedCard`, after scoring, if `gameClosed` is `true` and `UserPlayer.GetScore() >= Game66.WIN_SCORE`, both players' cards are cleared.
-- `PlayScreen_MouseClick` shows a winner message box when either player reaches score >= `Game66.WIN_SCORE` after playing a card.
+- `ChangeTrumpCard()` enforces the winning + zero-value trump card condition; `Game66.ChangeTrumpCard()` returns `true` when the trump card is successfully changed and `false` otherwise.
+- `Game66.CloseTheGame()` delegates to `UserPlayer.CloseTheGame()`, returns `true` and sets `gameClosed = true` and `TrumpCard = null` when `UserPlayer.Score >= 1`; returns `false` otherwise. When `gameClosed` is true, no new cards are dealt after playing.
+- In `SetUserPlayerSelectedCard`, after scoring, if `gameClosed` is `true` and `UserPlayer.GetScore() >= Game66.WinScore`, both players' cards are cleared.
+- `PlayScreen_MouseClick` shows a winner message box when either player reaches score >= `Game66.WinScore` after playing a card.
 - `PlayTwenty()` and `PlayForty()` methods moved from `Game66` to `UserPlayer`; `Game66` synchronizes `LastRoundUserWon` to `UserPlayer`.
-- `SetTwentyButton_Click` calls `game66.GetUserPlayer().PlayTwenty()`, shows `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`, then calls `Invalidate()`.
-- `SetFourtyButton_Click` calls `game66.GetUserPlayer().PlayForty()`, shows `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`, then calls `Invalidate()`.
+- `SetTwentyButton_Click` calls `game66.GetUserPlayer().PlayTwenty()`, shows `"User Player won!"` when `UserPlayer.Score >= Game66.WinScore`, then calls `Invalidate()`.
+- `SetFourtyButton_Click` calls `game66.GetUserPlayer().PlayForty()`, shows `"User Player won!"` when `UserPlayer.Score >= Game66.WinScore`, then calls `Invalidate()`.
 - Computer response logic is split into helpers: `GetComputerPlayerCardToPlay`, `GetComputerPlayerCardToPlayByTrumpCard`, `GetComputerPlayerSmallestCard`.
 
 ---
@@ -179,27 +181,31 @@ Cantace/
 ## 8. Current Status
 All features requested through the `SetTwenty` / `SetForty` button command are implemented and the project builds successfully with `dotnet build`. Button click handlers for `SetTwenty` and `SetForty` are present as empty stubs.
 - Card images in `G:\PROJECTS\Game66\Images` have been replaced with the images from `G:\PROJECTS\CSoft\Cantace\Images`.
-- `CloseTheGame()` method added to `Game66` to set `gameClosed = true` when `UserPlayer.Score >= 1`. When `gameClosed` is true, no new cards are dealt after playing.
-- `SetUserPlayerSelectedCard` updated to clear both players' cards when either `UserPlayer.GameClosed && UserPlayer.GetScore() >= Game66.WIN_SCORE` or `ComputerPlayer.GameClosed && ComputerPlayer.GetScore() >= Game66.WIN_SCORE`.
+- `Game66.CloseTheGame()` method added; delegates to `UserPlayer.CloseTheGame()`, sets `TrumpCard = null` on success, and returns `bool`. `UserPlayer.CloseTheGame()` returns `true` when `UserPlayer.Score >= 1` and sets `GameClosed = true`, otherwise returns `false`. `ComputerPlayer.CloseTheGame()` returns `false`.
+- `SetUserPlayerSelectedCard` updated to clear both players' cards when either `UserPlayer.GameClosed && UserPlayer.GetScore() >= Game66.WinScore` or `ComputerPlayer.GameClosed && ComputerPlayer.GetScore() >= Game66.WinScore`.
 - `SetPlayersCards()` is now called only when both `!UserPlayer.GameClosed` and `!ComputerPlayer.GameClosed` are true.
-- `SetCardsButton_Click` in `PlayScreen.cs` now calls `mGame66.ResetGame()` as the first line before shuffling and distributing cards.
+- `SetCardsButton_Click` in `PlayScreen.cs` now creates a new `mGame66` instance instead of calling `ResetGame()`, followed by `mGame66.MixCards()`, `mGame66.DistributeCards()`, resets `mSelectedCardIndex` to `-1`, and calls `Invalidate()`.
+- `ChangeTrumpCardButton_Click` disables `ChangeTrumpCardButton` when `mGame66.ChangeTrumpCard()` returns `true` (successful trump change).
 - `PlayedCardsPair` class added to `Objects\PlayedCardsPair.cs` with nullable properties `UserPlayerCard` and `ComputerPlayerCard` of type `Card?`, and nullable properties `UserPlayerResult` and `ComputerPlayerResult` of type `int?` to represent the round outcome for each player.
 - `mPlayedCards` added to `Game66` as a public `List<PlayedCardsPair>` property to track pairs of cards played during the game.
-- `ResetGame()` clears `mPlayedCards` in addition to hands, scores, `CurrentCard`, `TrumpCard`, and both players' `CatchPoupDamaList`.
+- `ResetGame()` method is commented out; `mPlayedCards` is cleared only when a new `Game66()` instance is created.
 - `DrawPlayedCards(Graphics g)` added to `PlayScreen`; draws `ComputerPlayerCard` images on the left side at `x = 140` with `UserPlayerResult` and `ComputerPlayerResult` text prefixed with "+" to the right of each card, and `UserPlayerCard` images on the right side at `x = ClientSize.Width - 240` from `mGame66.mPlayedCards`, stacked vertically at 50% size (50×70).
 
 ---
-- `CloseGameButton` added to `PlayScreen` to trigger `CloseTheGame()`.
-- `PlayScreen_MouseClick` shows a winner message box when either player reaches score >= `Game66.WIN_SCORE` after playing a card.
+- `CloseGameButton` added to `PlayScreen` to trigger `Game66.CloseTheGame()`; the button is disabled when `Game66.CloseTheGame()` returns `true` (which also sets `TrumpCard = null`).
+- `PlayScreen_MouseClick` shows a winner message box when either player reaches score >= `Game66.WinScore` after playing a card.
 - `SetUserPlayerSelectedCard` updated so that if the user's selected card is of the trump suit and the computer's card is not, the full round score is awarded to `UserPlayer` without comparing card values.
 - `SetUserPlayerSelectedCard` updated so that if the computer's card is of the trump suit and the user's selected card is not, the full round score is awarded to `ComputerPlayer` without comparing card values.
 - `SetUserPlayerSelectedCard` updated so that when neither card is trump, if both cards share the same suit, the round score is awarded based on higher card value; if the cards are of different suits, the round score is awarded to the player who won the last round (`UserPlayer.LastRoundUserWon`).
 - After each `UserPlayer.LastRoundUserWon = true` assignment in `SetUserPlayerSelectedCard`, `UserPlayer.PlayForty(TrumpCard)` is called; if it returns a non-null `Card?`, `SetUserPlayerSelectedCard` is called recursively with the returned card. If `PlayForty(TrumpCard)` returns `null`, `UserPlayer.PlayTwenty(TrumpCard)` is called; if it returns a non-null `Card?`, `SetUserPlayerSelectedCard` is called recursively with the returned card.
+- `ProcessUserResult(Card? trumpCard)` private method extracted from `SetUserPlayerSelectedCard` in `Game66`; encapsulates the forty/twenty bonus logic by calling `PlayForty()` and, if null, `PlayTwenty()`, then recursively calling `SetUserPlayerSelectedCard()` and the corresponding `CreateCatchPoupDama` method for the returned card.
+- `ProcessSelectedCards(Card selectedCard, Card computerCard, int roundScore, Card? trumpCard)` private method extracted from `SetUserPlayerSelectedCard` in `Game66`; handles the same-suit comparison logic: awards the round score to the player with the higher card value, updates `LastRoundUserWon` and `UserPlayerResult`/`ComputerPlayerResult`, and calls `ProcessUserResult(trumpCard)` when the user wins the round.
+- `ProcessCardsResults(Card selectedCard, Card computerCard, int roundScore, Card? trumpCard)` private method extracted from `SetUserPlayerSelectedCard` in `Game66`; handles the different-suit non-trump logic: awards the round score based on `LastRoundUserWon`, updates the corresponding result property, and calls `ProcessUserResult(trumpCard)` when the user wins the round.
 - `PlayTwenty()` method moved to `UserPlayer` to award 20 points when the user won the last round and holds non-trump value-4 and value-3 cards of the same suit; implementation iterates over each `Suit` separately, scanning all cards per suit, and awards 20 points immediately when both required cards are found for any non-trump suit (no early exit).
-- `SetTwentyButton_Click` implemented to call `game66.GetUserPlayer().PlayTwenty()`, show `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`, and refresh the UI.
+- `SetTwentyButton_Click` implemented to call `game66.GetUserPlayer().PlayTwenty()`, show `"User Player won!"` when `UserPlayer.Score >= Game66.WinScore`, and refresh the UI.
 - `PlayForty()` method moved to `UserPlayer` to award 40 points when the user won the last round and holds trump value-4 and value-3 cards (suit match no longer required).
-- `SetFourtyButton_Click` implemented to call `game66.GetUserPlayer().PlayForty()`, show `"User Player won!"` when `UserPlayer.Score >= Game66.WIN_SCORE`, and refresh the UI.
-- `ChangeTrumpCard(int, Card?)` moved from `Game66` to `UserPlayer`; `UserPlayer.ChangeTrumpCard(int computerPlayerScore, Card? trumpCard)` performs the swap and returns the new trump card, while `Game66.ChangeTrumpCard()` delegates to it and updates `Game66.TrumpCard`. Returns `null` when `GameClosed` is `true`.
+- `SetFourtyButton_Click` implemented to call `game66.GetUserPlayer().PlayForty()`, show `"User Player won!"` when `UserPlayer.Score >= Game66.WinScore`, and refresh the UI.
+- `ChangeTrumpCard(int, Card?)` moved from `Game66` to `UserPlayer`; `UserPlayer.ChangeTrumpCard(int computerPlayerScore, Card? trumpCard)` performs the swap and returns the new trump card, while `Game66.ChangeTrumpCard()` delegates to it, updates `Game66.TrumpCard`, and returns `bool` indicating success. Returns `false` when `GameClosed` is `true`.
 - `ChangeTrumpCard(int, Card?)` declared as abstract in `Player`; `UserPlayer` provides concrete logic, `ComputerPlayer` provides empty/no-op override. `PlayTwenty(Card?)` and `PlayForty(Card?)` are `virtual` in `Player`; `ComputerPlayer` inherits them without override.
 - `PlayTwenty()` and `PlayForty()` implementations moved from `UserPlayer` to `Player` as `virtual` methods returning `Card?`; they return the `Poup` card when the required card combination is found, `null` otherwise. They also increment the player's score by `TWENTY` (20) or `FORTY` (40) directly when the condition is met. `PlayForty()` now returns early inside the loop as soon as both trump `Poup` and `Dama` cards are found. `PlayScreen` button handlers simply invoke these methods.
 - `CatchPoupDama` class added to `Objects\CatchPoupDama.cs` with properties `CardPoup`, `CardDama`, and `IsForty`. `Player` now contains a `List<CatchPoupDama> CatchPoupDamaList` initialized in the constructor, a private `CreateCatchPoupDama(Card, bool)` method that finds the matching `Dama` card by suit and adds a new `CatchPoupDama`, and two public factory methods: `CreateCatchPoupDamaForTwenty(Card)` and `CreateCatchPoupDamaForForty(Card)` that delegate to the private method with `IsForty = false` or `IsForty = true` respectively. Whenever `PlayTwenty()` or `PlayForty()` returns a non-null `Card` in `SetUserPlayerSelectedCard` or `SetComputerPlayerSelectedCard`, the corresponding factory method is called with the returned `Poup` card.
@@ -210,13 +216,13 @@ All features requested through the `SetTwenty` / `SetForty` button command are i
 - `PlayScreen_Paint` play scene drawing logic extracted to `private void DrawPlayScene(Graphics g)`; draws "Computer" score text on the top left and "You" score text on the top right, with the current user/computer cards in the middle of the screen.
 - `GetCardSymbol()` removed from `Player`; all callers now use direct `Suit` property access (`card.CardName`, `TrumpCard.CardName`).
 - `PlaySelectedCard` renamed to `SetUserPlayerSelectedCard` in `Objects\Game66.cs` and `PlayScreen.cs` for clarity.
-- `SetComputerPlayerSelectedCard` added to `Game66` to select the computer's card: prefers a trump-suit card with value 11, otherwise calls `ComputerPlayer.PlayForty()` and uses the returned card if non-null, otherwise calls `ComputerPlayer.PlayTwenty()` and uses the returned card if non-null; if neither returns a card, selects the smallest-value card. The selected card is removed from `ComputerPlayer` and from `mCards`, and set as `CurrentCard` in a single final block; clears `UserPlayer.CurrentCard`.
+- `SetComputerPlayerSelectedCard` added to `Game66` to select the computer's card: prefers a trump-suit card with value 11, otherwise calls `ComputerPlayer.PlayForty()` and uses the returned card if non-null, otherwise calls `ComputerPlayer.PlayTwenty()` and uses the returned card if non-null; if neither returns a card, selects the smallest-value card. The selected card is removed from `ComputerPlayer` and set as `CurrentCard` in a single final block; clears `UserPlayer.CurrentCard`.
 - `PlayCardCount` made publicly readable in `Game66`; `PlayScreen_MouseClick` starts a 5-second `Timer` when `PlayCardCount > 0` and `LastRoundUserWon` is `false`, after which `SetComputerPlayerSelectedCard()` is called and the UI is invalidated to present the computer's card in `PlayScreen_Paint`.
 - `SetUserPlayerSelectedCard` uses `ComputerPlayer.CurrentCard` for `computerCard` when `PlayCardCount > 0` and `LastRoundUserWon` is `false`; otherwise, it runs the existing card-selection logic.
 - `PlayScreen` declares `private const int COMPUTER_USER_SELECT_TIME = 2000` and uses it for the `computerPlayTimer.Interval`.
-- `SetCardsButton_Click` now calls `mGame66.ResetGame()` as its first line, followed by `mGame66.MixCards()`, `mGame66.DistributeCards()`, resets `mSelectedCardIndex` to `-1`, and calls `Invalidate()`.
+- `SetCardsButton_Click` now creates a new `mGame66` instance instead of calling `ResetGame()`, followed by `mGame66.MixCards()`, `mGame66.DistributeCards()`, resets `mSelectedCardIndex` to `-1`, and calls `Invalidate()`.
 - `SetPlayersCards()` extracted from `SetUserPlayerSelectedCard` in `Game66`; it contains the card-dealing logic (incrementing `PlayCardCount` and setting cards for both players), and is called when `!UserPlayer.GameClosed`. If `LastRoundUserWon` is `true`, `UserPlayer` receives the first card; otherwise, `ComputerPlayer` receives the first card.
-- `SetUserPlayerCard()` and `SetComputerPlayerCard()` extracted as private methods from `SetPlayersCards()` in `Game66`; each handles incrementing `PlayCardCount` and dealing one card to the corresponding player.
+- `SetUserPlayerCard()` and `SetComputerPlayerCard()` extracted as private methods from `SetPlayersCards()` in `Game66`; each handles incrementing `PlayCardCount` and dealing one card to the corresponding player. If either method exhausts `mCards` without finding an undealt card, the current `TrumpCard` is assigned to the corresponding player and `TrumpCard` is set to `null`.
 - `GetComputerPlayerCardToPlayByCardType`, `GetComputerPlayerCardToPlayByTrumpCard`, and `GetComputerPlayerSmallestCard` moved from `Game66` to `ComputerPlayer` as public methods.
 - `SetNextComputerPlayerCard(Card, Card?)` moved from `Game66` to `ComputerPlayer` as a public method; it encapsulates the computer card-selection logic by trying card-type match first, then trump-suit match, then smallest card, and removes the selected card from the hand in a single final step.
 - `GameClosed` property moved from `UserPlayer` to `Player` as a public auto-property.
