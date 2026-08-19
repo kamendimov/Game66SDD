@@ -34,8 +34,8 @@ Build a two-player card game (human vs. computer) where a human player competes 
 - **REQ-UI-07:** Scores are displayed at the top center.
 
 ### 4.2 Buttons & Controls
-- **REQ-BTN-01:** `ResetGameButton` — creates a new `Game66()` instance to reset the entire game state.
-- **REQ-BTN-02:** `SetCardsButton` — shuffles the deck and distributes cards.
+- **REQ-BTN-01:** `ResetGameButton` — creates a new `Game66()` instance to reset the entire game state and re-enables `ChangeTrumpCardButton` and `CloseGameButton`.
+- **REQ-BTN-02:** `SetCardsButton` — shuffles the deck, distributes cards, and re-enables `ChangeTrumpCardButton` and `CloseGameButton`.
 - **REQ-BTN-03:** `ChangeTrumpCardButton` — calls `Game66.ChangeTrumpCard()` to perform trump change when conditions are met; the button is disabled after a successful trump change.
 - **REQ-BTN-04:** `SetTwentyButton` — calls `PlayTwenty()` and, if `UserPlayer.Score >= Game66.WinScore`, shows `"User Player won!"`.
 - **REQ-BTN-05:** `SetFortyButton` — calls `PlayForty()` and, if `UserPlayer.Score >= Game66.WinScore`, shows `"User Player won!"`.
@@ -96,8 +96,8 @@ Build a two-player card game (human vs. computer) where a human player competes 
 | ID | Criterion | Status |
 |----|-----------|--------|
 | AC-01 | Form builds and runs with width 1200 and height equal to the primary desktop screen height, with FixedSingle border and Arial 11pt. | ✅ Met |
-| AC-02 | `ResetGameButton` creates a new `Game66()` instance to clear all game state (hands, scores, trump, current cards). | ✅ Met |
-| AC-03 | `SetCardsButton` shuffles deck and deals 6 cards to each player plus a trump card. | ✅ Met |
+| AC-02 | `ResetGameButton` creates a new `Game66()` instance to clear all game state (hands, scores, trump, current cards) and re-enables `ChangeTrumpCardButton` and `CloseGameButton`. | ✅ Met |
+| AC-03 | `SetCardsButton` shuffles deck, deals 6 cards to each player plus a trump card, and re-enables `ChangeTrumpCardButton` and `CloseGameButton`. | ✅ Met |
 | AC-04 | Double-click on a user card replaces it from undeck starting at index 13 (trump excluded). | ✅ Met |
 | AC-05 | Trump card is displayed top-right and can be changed only under win + zero-value conditions. | ✅ Met |
 | AC-06 | Computer plays matching suit, highest value if winning; minimal greater value if not; otherwise smallest card. | ✅ Met |
@@ -184,7 +184,8 @@ All features requested through the `SetTwenty` / `SetForty` button command are i
 - `Game66.CloseTheGame()` method added; delegates to `UserPlayer.CloseTheGame()`, sets `TrumpCard = null` on success, and returns `bool`. `UserPlayer.CloseTheGame()` returns `true` when `UserPlayer.Score >= 1` and sets `GameClosed = true`, otherwise returns `false`. `ComputerPlayer.CloseTheGame()` returns `false`.
 - `SetUserPlayerSelectedCard` updated to clear both players' cards when either `UserPlayer.GameClosed && UserPlayer.GetScore() >= Game66.WinScore` or `ComputerPlayer.GameClosed && ComputerPlayer.GetScore() >= Game66.WinScore`.
 - `SetPlayersCards()` is now called only when both `!UserPlayer.GameClosed` and `!ComputerPlayer.GameClosed` are true.
-- `SetCardsButton_Click` in `PlayScreen.cs` now creates a new `mGame66` instance instead of calling `ResetGame()`, followed by `mGame66.MixCards()`, `mGame66.DistributeCards()`, resets `mSelectedCardIndex` to `-1`, and calls `Invalidate()`.
+- `SetCardsButton_Click` in `PlayScreen.cs` now creates a new `mGame66` instance instead of calling `ResetGame()`, followed by `mGame66.MixCards()`, `mGame66.DistributeCards()`, resets `mSelectedCardIndex` to `-1`, re-enables `ChangeTrumpCardButton` and `CloseGameButton`, and calls `Invalidate()`.
+- `ResetGameButton_Click` in `PlayScreen.cs` now creates a new `mGame66` instance instead of calling `ResetGame()`, resets `mSelectedCardIndex` to `-1`, re-enables `ChangeTrumpCardButton` and `CloseGameButton`, and calls `Invalidate()`.
 - `ChangeTrumpCardButton_Click` disables `ChangeTrumpCardButton` when `mGame66.ChangeTrumpCard()` returns `true` (successful trump change).
 - `PlayedCardsPair` class added to `Objects\PlayedCardsPair.cs` with nullable properties `UserPlayerCard` and `ComputerPlayerCard` of type `Card?`, and nullable properties `UserPlayerResult` and `ComputerPlayerResult` of type `int?` to represent the round outcome for each player.
 - `mPlayedCards` added to `Game66` as a public `List<PlayedCardsPair>` property to track pairs of cards played during the game.
@@ -220,7 +221,8 @@ All features requested through the `SetTwenty` / `SetForty` button command are i
 - `PlayCardCount` made publicly readable in `Game66`; `PlayScreen_MouseClick` starts a 5-second `Timer` when `PlayCardCount > 0` and `LastRoundUserWon` is `false`, after which `SetComputerPlayerSelectedCard()` is called and the UI is invalidated to present the computer's card in `PlayScreen_Paint`.
 - `SetUserPlayerSelectedCard` uses `ComputerPlayer.CurrentCard` for `computerCard` when `PlayCardCount > 0` and `LastRoundUserWon` is `false`; otherwise, it runs the existing card-selection logic.
 - `PlayScreen` declares `private const int COMPUTER_USER_SELECT_TIME = 2000` and uses it for the `computerPlayTimer.Interval`.
-- `SetCardsButton_Click` now creates a new `mGame66` instance instead of calling `ResetGame()`, followed by `mGame66.MixCards()`, `mGame66.DistributeCards()`, resets `mSelectedCardIndex` to `-1`, and calls `Invalidate()`.
+- `SetCardsButton_Click` now creates a new `mGame66` instance instead of calling `ResetGame()`, followed by `mGame66.MixCards()`, `mGame66.DistributeCards()`, resets `mSelectedCardIndex` to `-1`, re-enables `ChangeTrumpCardButton` and `CloseGameButton`, and calls `Invalidate()`.
+- `ResetGameButton_Click` now creates a new `mGame66` instance instead of calling `ResetGame()`, resets `mSelectedCardIndex` to `-1`, re-enables `ChangeTrumpCardButton` and `CloseGameButton`, and calls `Invalidate()`.
 - `SetPlayersCards()` extracted from `SetUserPlayerSelectedCard` in `Game66`; it contains the card-dealing logic (incrementing `PlayCardCount` and setting cards for both players), and is called when `!UserPlayer.GameClosed`. If `LastRoundUserWon` is `true`, `UserPlayer` receives the first card; otherwise, `ComputerPlayer` receives the first card.
 - `SetUserPlayerCard()` and `SetComputerPlayerCard()` extracted as private methods from `SetPlayersCards()` in `Game66`; each handles incrementing `PlayCardCount` and dealing one card to the corresponding player. If either method exhausts `mCards` without finding an undealt card, the current `TrumpCard` is assigned to the corresponding player and `TrumpCard` is set to `null`.
 - `GetComputerPlayerCardToPlayByCardType`, `GetComputerPlayerCardToPlayByTrumpCard`, and `GetComputerPlayerSmallestCard` moved from `Game66` to `ComputerPlayer` as public methods.

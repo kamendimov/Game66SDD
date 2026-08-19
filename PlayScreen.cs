@@ -44,6 +44,8 @@ public partial class PlayScreen : Form
         //mGame66.ResetGame();
         mGame66 = new Game66();
         mSelectedCardIndex = -1;
+        ChangeTrumpCardButton.Enabled = true;
+        CloseGameButton.Enabled = true;
         Invalidate();
     }
 
@@ -54,6 +56,8 @@ public partial class PlayScreen : Form
         mGame66.MixCards();
         mGame66.DistributeCards();
         mSelectedCardIndex = -1;
+        ChangeTrumpCardButton.Enabled = true;
+        CloseGameButton.Enabled = true;
         Invalidate();
     }
 
