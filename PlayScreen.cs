@@ -1,4 +1,4 @@
-namespace Cantace;
+﻿namespace Cantace;
 
 using System.Drawing;
 using System.IO;
@@ -233,15 +233,35 @@ public partial class PlayScreen : Form
 
     private void DrawTrumpCard(Graphics g)
     {
-        Card? trumpCard = mGame66.TrumpCard;
-        if (trumpCard != null)
+        if (!mGame66.DoesTrumpCardPlay() && mGame66.TrumpCard != null)
         {
-            string trumpImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, trumpCard.ImagePath);
+            string trumpImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, mGame66.TrumpCard.ImagePath);
             if (File.Exists(trumpImagePath))
             {
                 Image trumpImage = Image.FromFile(trumpImagePath);
                 g.DrawImage(trumpImage, ClientSize.Width - 120, 10, 100, 140);
             }
+        }
+        else if (mGame66.TrumpCard != null)
+        {
+            Image suitImage;
+            if (mGame66.TrumpCard.CardName == Suit.Kare)
+            {
+                suitImage = Image.FromFile("Images\\Kare.png");
+            }
+            else if (mGame66.TrumpCard.CardName == Suit.Kupa)
+            {
+                suitImage = Image.FromFile("Images\\Kupa.png");
+            }
+            else if (mGame66.TrumpCard.CardName == Suit.Pika)
+            {
+                suitImage = Image.FromFile("Images\\Pika.png");
+            }
+            else
+            {
+                suitImage = Image.FromFile("Images\\Spatia.png");
+            }
+            g.DrawImage(suitImage, ClientSize.Width - 120, 10, 100, 140);
         }
     }
 

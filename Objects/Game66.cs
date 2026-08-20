@@ -251,10 +251,9 @@ public class Game66
             }
         }
 
-        if (!cardDealt && TrumpCard != null)
+        if (!cardDealt && !DoesTrumpCardPlay())
         {
-            mUserPlayer.SetCard(TrumpCard);
-            TrumpCard = null;
+            mUserPlayer.SetCard(TrumpCard!);
         }
     }
 
@@ -273,10 +272,9 @@ public class Game66
             }
         }
 
-        if (!cardDealt && TrumpCard != null)
+        if (!cardDealt && !DoesTrumpCardPlay())
         {
-            mComputerPlayer.SetCard(TrumpCard);
-            TrumpCard = null;
+            mComputerPlayer.SetCard(TrumpCard!);
         }
     }
 
@@ -380,6 +378,11 @@ public class Game66
     public int GetComputerPlayerScore()
     {
         return mComputerPlayer.GetScore();
+    }
+
+    public bool DoesTrumpCardPlay()
+    {
+        return PlayCardCount >= sTrumpCardIndex;
     }
 
     public void SetComputerPlayerSelectedCard()

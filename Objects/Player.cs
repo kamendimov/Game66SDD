@@ -64,11 +64,6 @@ public abstract class Player
 
     public virtual Card? PlayTwenty(Card? trumpCard)
     {
-        if (!LastRoundUserWon)
-        {
-            return null;
-        }
-        
         Suit? trumpSymbol = trumpCard != null ? trumpCard.CardName : null;
         
         foreach (Suit suit in Enum.GetValues(typeof(Suit)))
@@ -102,11 +97,6 @@ public abstract class Player
 
     public virtual Card? PlayForty(Card? trumpCard)
     {
-        if (!LastRoundUserWon)
-        {
-            return null;
-        }
-        
         if (trumpCard == null)
         {
             return null;
